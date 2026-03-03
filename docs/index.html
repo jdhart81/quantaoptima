@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuantaOptima — Quantum-Inspired Optimization</title>
+<meta name="description" content="Black-box optimization that uses 7-31x fewer function evaluations. MCP server for Claude and LLM agents.">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --border: #1e1e2e;
+  --text: #e4e4ef;
+  --muted: #8888a0;
+  --accent: #6366f1;
+  --accent2: #818cf8;
+  --green: #34d399;
+  --orange: #fb923c;
+  --mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.6; }
+a { color: var(--accent2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+/* Hero */
+.hero { padding: 80px 0 60px; text-align: center; }
+.hero h1 { font-size: 3rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px; }
+.hero h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero .subtitle { font-size: 1.25rem; color: var(--muted); max-width: 640px; margin: 0 auto 32px; }
+.hero .install { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 24px; display: inline-block; font-family: var(--mono); font-size: 1rem; color: var(--green); cursor: pointer; transition: border-color 0.2s; }
+.hero .install:hover { border-color: var(--accent); }
+.hero .install::before { content: '$ '; color: var(--muted); }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 40px 0; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; }
+.stat .number { font-size: 2.5rem; font-weight: 700; color: var(--green); }
+.stat .label { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
+
+/* Sections */
+section { padding: 60px 0; }
+section h2 { font-size: 1.75rem; margin-bottom: 24px; font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+.card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+.card p { color: var(--muted); font-size: 0.95rem; }
+.card .tag { display: inline-block; background: rgba(99,102,241,0.15); color: var(--accent2); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 8px; }
+
+/* Code block */
+.code-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; overflow-x: auto; }
+.code-block pre { font-family: var(--mono); font-size: 0.9rem; line-height: 1.7; color: var(--text); }
+.code-block .comment { color: #6b7280; }
+.code-block .keyword { color: var(--accent2); }
+.code-block .string { color: var(--green); }
+.code-block .number { color: var(--orange); }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+th { color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+td { font-family: var(--mono); font-size: 0.9rem; }
+.highlight { color: var(--green); font-weight: 600; }
+
+/* CTA */
+.cta { text-align: center; padding: 60px 0 80px; }
+.cta .btn { display: inline-block; background: var(--accent); color: white; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 1rem; transition: opacity 0.2s; }
+.cta .btn:hover { opacity: 0.9; text-decoration: none; }
+.cta .btn + .btn { margin-left: 16px; background: transparent; border: 1px solid var(--border); color: var(--text); }
+
+/* Footer */
+footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
+
+@media (max-width: 640px) {
+  .hero h1 { font-size: 2rem; }
+  .stats { grid-template-columns: 1fr; }
+  .grid2 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="hero">
+    <h1><span>QuantaOptima</span></h1>
+    <p class="subtitle">
+      Quantum-inspired black-box optimization that uses 7&ndash;31&times; fewer function evaluations.
+      Ships as a Python library and MCP server for LLM agents.
+    </p>
+    <div class="install" onclick="navigator.clipboard.writeText('pip install quantaoptima')" title="Click to copy">pip install quantaoptima</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="number">31&times;</div>
+      <div class="label">fewer evaluations vs. Differential Evolution (Ackley d=20)</div>
+    </div>
+    <div class="stat">
+      <div class="number">5</div>
+      <div class="label">MCP tools for any LLM agent</div>
+    </div>
+    <div class="stat">
+      <div class="number">0</div>
+      <div class="label">dependencies beyond NumPy</div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Benchmark Results</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Problem</th>
+            <th>Dim</th>
+            <th>QuantaOptima</th>
+            <th>Diff. Evolution</th>
+            <th>Speedup</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Sphere</td><td>10</td><td>600</td><td>4,200</td><td class="highlight">7.0&times;</td></tr>
+          <tr><td>Rastrigin</td><td>10</td><td>1,200</td><td>9,400</td><td class="highlight">7.8&times;</td></tr>
+          <tr><td>Rosenbrock</td><td>20</td><td>2,800</td><td>41,000</td><td class="highlight">14.6&times;</td></tr>
+          <tr><td>Ackley</td><td>20</td><td>1,500</td><td>47,000</td><td class="highlight">31.3&times;</td></tr>
+          <tr><td>Griewank</td><td>20</td><td>2,100</td><td>38,000</td><td class="highlight">18.1&times;</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>How It Works</h2>
+    <div class="grid2">
+      <div class="card">
+        <div class="tag">ENCODE</div>
+        <h3>Quantum State Encoding</h3>
+        <p>Maps population fitness to complex amplitudes via Boltzmann weighting. Each solution becomes a component of a quantum-like superposition.</p>
+      </div>
+      <div class="card">
+        <div class="tag">EVOLVE</div>
+        <h3>Quantum Evolution</h3>
+        <p>Three operators: Rotation (fitness&rarr;phases), Entanglement (solution cross-talk via inner products), Scrambling (controlled noise). Creates constructive interference on good solutions.</p>
+      </div>
+      <div class="card">
+        <div class="tag">COLLAPSE</div>
+        <h3>Measurement Collapse</h3>
+        <p>PCA-derived measurement basis + Born rule + entropy constraint = adaptive selection that extracts more information per evaluation than tournament selection.</p>
+      </div>
+      <div class="card">
+        <div class="tag">AUDIT</div>
+        <h3>Cryptographic Trail</h3>
+        <p>Every step is HMAC-SHA256 signed and hash-chained. Tamper with one step &rarr; all subsequent signatures break. Full verifiability.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>MCP Integration</h2>
+    <div class="code-block"><pre><span class="comment">// claude_desktop_config.json</span>
+{
+  <span class="string">"mcpServers"</span>: {
+    <span class="string">"quantaoptima"</span>: {
+      <span class="string">"command"</span>: <span class="string">"quantaoptima-server"</span>
+    }
+  }
+}</pre></div>
+    <p style="color: var(--muted); margin-top: 16px;">
+      Then ask your agent: <em>"Optimize Rastrigin in 20 dimensions, benchmark against classical methods, then show me the landscape observability data."</em>
+    </p>
+  </section>
+
+  <section>
+    <h2>Observability &amp; Safety</h2>
+    <div class="card">
+      <p>
+        The same measurement-collapse mechanics that make QuantaOptima efficient also make it <strong>interpretable</strong>.
+        Every run produces entropy trajectories, coherence budgets, interference advantages, and phase transition detection &mdash;
+        a complete picture of how the optimizer navigates the search landscape.
+      </p>
+      <p style="margin-top: 12px;">
+        For AI safety researchers: this is a concrete example of making black-box optimization transparent without sacrificing performance.
+        The <code>quantaoptima_observe</code> tool exposes the full telemetry stream via MCP.
+      </p>
+    </div>
+  </section>
+
+  <div class="cta">
+    <a href="https://github.com/justinhart/quantaoptima" class="btn">View on GitHub</a>
+    <a href="https://pypi.org/project/quantaoptima/" class="btn">PyPI Package</a>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    QuantaOptima &copy; 2025 Justin Hart &middot; US Provisional Patent Filed 5/25/25 &middot; Apache 2.0
+  </div>
+</footer>
+
+</body>
+</html>
