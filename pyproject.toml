@@ -37,19 +37,13 @@ classifiers = [
 ]
 dependencies = [
     "numpy>=1.21",
+    "scipy>=1.9",
     "mcp[cli]>=1.0",
     "pydantic>=2.0",
 ]
 
 [project.optional-dependencies]
-benchmarks = [
-    "scipy>=1.9",
-]
-all = [
-    "quantaoptima[benchmarks]",
-]
 dev = [
-    "quantaoptima[all]",
     "pytest>=7.0",
     "pytest-asyncio>=0.21",
 ]
