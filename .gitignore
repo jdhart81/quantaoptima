@@ -12,3 +12,6 @@ build/
 .DS_Store
 .env
 *.log
+.stripe_config.json
+quantaoptima.key
+*.key

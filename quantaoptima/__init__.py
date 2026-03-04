@@ -18,7 +18,7 @@ from quantaoptima.mcp_algorithm import MeasurementCollapsePruner
 from quantaoptima.audit import CryptoAuditTrail
 from quantaoptima.optimizer import QuantaOptimizer
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Justin Hart"
 
 __all__ = [

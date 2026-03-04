@@ -8,6 +8,22 @@ QuantaOptima replaces expensive trial-and-error with interference-enhanced selec
 pip install quantaoptima
 ```
 
+## Pricing
+
+| | Community (Free) | Pro ($29/mo) | Enterprise |
+|---|---|---|---|
+| Objectives | 3 (Sphere, Rastrigin, Rosenbrock) | All 6 | All + custom |
+| Max Dimensions | 10 | 100 | Unlimited |
+| Max Iterations | 100 | 5,000 | Unlimited |
+| MCP Tools | optimize, explain | All 6 tools | All + custom API |
+| Benchmark Comparison | — | ✓ | ✓ |
+| Observability / AI Safety | — | ✓ | ✓ |
+| Audit Export | — | ✓ | ✓ |
+| Support | Community | Email | Priority + SLA |
+| | [Install Free](https://pypi.org/project/quantaoptima/) | [Get Pro](https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02) | [Contact](mailto:hartjustin6@gmail.com) |
+
+Annual Pro: **$199/year** (save 43%)
+
 ## Why This Exists
 
 Every hyperparameter sweep, simulation-based design loop, and neural architecture search burns compute on function evaluations. QuantaOptima's Measurement-Collapse Pruner (MCP) reduces that cost by an order of magnitude on problems where evaluations are expensive and dimensionality is moderate (d ≤ 50).
@@ -59,15 +75,29 @@ Add to your Claude Desktop config (`claude_desktop_config.json`):
 
 Then ask Claude: *"Optimize the Rastrigin function in 20 dimensions and explain what the quantum operators did."*
 
+### License Key Setup (Pro/Enterprise)
+
+```bash
+# Option 1: Environment variable
+export QUANTAOPTIMA_LICENSE="your-key-here"
+
+# Option 2: License file
+mkdir -p ~/.quantaoptima
+echo "your-key-here" > ~/.quantaoptima/license.key
+```
+
+Check your license status by asking your agent to call `quantaoptima_status`.
+
 ### Available MCP Tools
 
-| Tool | Purpose |
-|---|---|
-| `quantaoptima_optimize` | Run optimization on built-in or custom objectives |
-| `quantaoptima_benchmark` | Compare against differential evolution & dual annealing |
-| `quantaoptima_observe` | Inspect landscape, entropy trajectory, phase transitions |
-| `quantaoptima_explain` | Human-readable explanation of what happened |
-| `quantaoptima_audit` | Verify cryptographic audit trail |
+| Tool | Tier | Purpose |
+|---|---|---|
+| `quantaoptima_optimize` | Free | Run optimization on built-in objectives |
+| `quantaoptima_explain` | Free | Human-readable explanation of what happened |
+| `quantaoptima_status` | Free | Check license status and available features |
+| `quantaoptima_benchmark` | Pro | Compare against differential evolution & dual annealing |
+| `quantaoptima_observe` | Pro | Inspect landscape, entropy trajectory, phase transitions |
+| `quantaoptima_audit` | Pro | Verify and export cryptographic audit trail |
 
 ## How It Works
 
@@ -105,6 +135,7 @@ quantaoptima/
 ├── mcp_algorithm.py   # Measurement-Collapse Pruner
 ├── optimizer.py       # Full optimizer orchestration
 ├── audit.py           # Cryptographic audit trail
+├── licensing.py       # Freemium license key system
 ├── server.py          # MCP server (LLM integration)
 benchmarks/
 ├── benchmark.py       # Comparative benchmarks

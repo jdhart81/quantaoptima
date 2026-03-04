@@ -1,16 +1,19 @@
 """
 QuantaOptima MCP Server — Quantum-inspired optimization as LLM tools.
 
-Exposes optimization, benchmarking, observability, and audit capabilities
-via the Model Context Protocol (MCP). Any MCP-compatible agent (Claude,
-GPT, custom) can call these tools directly.
+Freemium model:
+  Community (Free): sphere/rastrigin/rosenbrock, 10 dims, 100 iters, optimize+explain
+  Pro ($29/mo): All objectives, 100 dims, 5000 iters, all 5 tools
+  Enterprise: Custom objectives, unlimited dims, white-label
+
+Set QUANTAOPTIMA_LICENSE env var or save key to ~/.quantaoptima/license.key
 
 Tools:
   - quantaoptima_optimize: Run optimization on a specified objective
-  - quantaoptima_benchmark: Compare against classical methods
-  - quantaoptima_observe: Inspect optimization landscape (safety/interpretability)
+  - quantaoptima_benchmark: Compare against classical methods [PRO]
+  - quantaoptima_observe: Inspect optimization landscape (safety/interpretability) [PRO]
   - quantaoptima_explain: Human-readable explanation of last run
-  - quantaoptima_audit: Cryptographic audit trail verification
+  - quantaoptima_audit: Cryptographic audit trail verification [PRO]
 
 Usage:
   quantaoptima-server              # Start stdio server (installed entry point)
@@ -33,6 +36,10 @@ from typing import Optional, Dict, Any
 
 from quantaoptima.optimizer import QuantaOptimizer, OptimizationResult
 from quantaoptima.audit import CryptoAuditTrail
+from quantaoptima.licensing import (
+    load_license, check_tool_access, check_limits,
+    clear_license_cache, TIERS,
+)
 
 # Lazy import MCP — only needed when running as server
 _mcp = None
@@ -48,7 +55,8 @@ def _get_mcp():
             description=(
                 "Quantum-inspired black-box optimizer. Solves optimization problems "
                 "using 7-31x fewer function evaluations than classical methods. "
-                "Includes landscape observability for AI safety/interpretability."
+                "Free tier: 3 objectives, 10 dims. Pro: full power. "
+                "Get a key at https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02"
             ),
         )
         _register_tools(_mcp)
@@ -62,6 +70,7 @@ def _get_mcp():
 _last_result: Optional[OptimizationResult] = None
 _last_audit: Optional[CryptoAuditTrail] = None
 _last_landscape: Optional[Dict[str, Any]] = None
+_usage_counter: Dict[str, int] = {"optimize": 0, "benchmark": 0}
 
 
 # ============================================================
@@ -119,19 +128,19 @@ BUILTIN_OBJECTIVES: Dict[str, Dict[str, Any]] = {
     },
     "ackley": {
         "func": _ackley,
-        "description": "Multimodal with flat outer region. Global optimum: 0 at origin.",
+        "description": "Multimodal with flat outer region. Global optimum: 0 at origin. [PRO]",
         "bounds": (-32.768, 32.768),
         "optimum": 0.0,
     },
     "griewank": {
         "func": _griewank,
-        "description": "Many regularly distributed local minima. Global optimum: 0 at origin.",
+        "description": "Many regularly distributed local minima. Global optimum: 0 at origin. [PRO]",
         "bounds": (-600, 600),
         "optimum": 0.0,
     },
     "levy": {
         "func": _levy,
-        "description": "Multimodal with narrow global basin. Global optimum: 0 at (1,1,...,1).",
+        "description": "Multimodal with narrow global basin. Global optimum: 0 at (1,1,...,1). [PRO]",
         "bounds": (-10, 10),
         "optimum": 0.0,
     },
@@ -161,6 +170,9 @@ def _register_tools(mcp):
         Uses interference-enhanced selection to solve black-box optimization problems
         with 7-31x fewer function evaluations than classical methods.
 
+        FREE tier: sphere, rastrigin, rosenbrock | 10 dims | 100 iters
+        PRO tier: all 6 objectives | 100 dims | 5000 iters
+
         Args:
             objective: Built-in function name (sphere, rastrigin, rosenbrock, ackley,
                       griewank, levy). The optimizer MAXIMIZES, so built-ins are negated.
@@ -175,17 +187,29 @@ def _register_tools(mcp):
         Returns:
             JSON with best_solution, best_fitness, quantum_metrics, and audit status.
         """
-        global _last_result, _last_audit, _last_landscape
+        global _last_result, _last_audit, _last_landscape, _usage_counter
 
-        # Validate
-        dimensions = max(2, min(100, dimensions))
-        max_iterations = max(10, min(5000, max_iterations))
-        population_size = max(10, min(200, population_size))
+        # --- LICENSE CHECK ---
+        gate = check_tool_access("quantaoptima_optimize")
+        if gate:
+            return gate
+
+        # Clamp to tier limits
+        license = load_license()
+        limits = license.limits
+        dimensions = max(2, min(limits["max_dimensions"], dimensions))
+        max_iterations = max(10, min(limits["max_iterations"], max_iterations))
+        population_size = max(10, min(limits["max_population"], population_size))
+
+        # Check objective access
+        limit_msg = check_limits(dimensions, max_iterations, population_size, objective)
+        if limit_msg:
+            return limit_msg
 
         if objective not in BUILTIN_OBJECTIVES:
             return json.dumps({
                 "error": f"Unknown objective '{objective}'.",
-                "available": list(BUILTIN_OBJECTIVES.keys()),
+                "available": sorted(limits["objectives"]),
                 "hint": "Use one of the built-in objectives listed above.",
             }, indent=2)
 
@@ -225,8 +249,9 @@ def _register_tools(mcp):
         _last_result = result
         _last_audit = optimizer.audit
         _last_landscape = _extract_landscape_data(result)
+        _usage_counter["optimize"] += 1
 
-        return json.dumps({
+        response = {
             "status": "success",
             "objective": objective,
             "dimensions": dimensions,
@@ -241,7 +266,25 @@ def _register_tools(mcp):
                 "verified": result.audit_summary.get("verified", False),
                 "blocks": result.audit_summary.get("blocks", 0),
             },
-        }, indent=2)
+            "license": {
+                "tier": license.tier,
+                "label": limits["label"],
+            },
+        }
+
+        # Upgrade nudge for free users after 3 runs
+        if license.tier == "community" and _usage_counter["optimize"] >= 3:
+            response["upgrade_hint"] = {
+                "message": (
+                    f"You've run {_usage_counter['optimize']} optimizations! "
+                    "Unlock 100 dimensions, 5000 iterations, 6 objectives, "
+                    "benchmarking, and AI safety observability with Pro."
+                ),
+                "url": "https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02",
+                "price": "$29/month",
+            }
+
+        return json.dumps(response, indent=2)
 
 
     @mcp.tool(name="quantaoptima_benchmark")
@@ -251,16 +294,23 @@ def _register_tools(mcp):
         max_evals: int = 5000,
     ) -> str:
         """
-        Compare QuantaOptima against classical optimizers on the same problem.
+        [PRO] Compare QuantaOptima against classical optimizers on the same problem.
 
         Runs QuantaOptima, Differential Evolution, and Dual Annealing with
         the same evaluation budget. Returns side-by-side comparison.
+
+        Requires Pro license. Get one at https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02
 
         Args:
             objective: Built-in function (sphere, rastrigin, rosenbrock, ackley, griewank, levy).
             dimensions: Problem dimensionality (2-50).
             max_evals: Total function evaluation budget (1000-50000).
         """
+        # --- LICENSE CHECK ---
+        gate = check_tool_access("quantaoptima_benchmark")
+        if gate:
+            return gate
+
         if objective not in BUILTIN_OBJECTIVES:
             return json.dumps({"error": f"Unknown: {objective}", "available": list(BUILTIN_OBJECTIVES.keys())})
 
@@ -270,6 +320,10 @@ def _register_tools(mcp):
             return json.dumps({"error": "scipy required. Install with: pip install quantaoptima[benchmarks]"})
 
         import time
+
+        license = load_license()
+        limits = license.limits
+        dimensions = max(2, min(limits["max_dimensions"], dimensions))
 
         obj_config = BUILTIN_OBJECTIVES[objective]
         func = obj_config["func"]
@@ -342,13 +396,14 @@ def _register_tools(mcp):
             "budget": max_evals,
             "results": results,
             "quantaoptima_efficiency": efficiency,
+            "license": {"tier": license.tier},
         }, indent=2)
 
 
     @mcp.tool(name="quantaoptima_observe")
     async def observe() -> str:
         """
-        Inspect the optimization landscape from the last run.
+        [PRO] Inspect the optimization landscape from the last run.
 
         Returns interpretability data: how the optimizer explored the search space,
         where entropy concentrated, which dimensions carried the most information,
@@ -358,9 +413,14 @@ def _register_tools(mcp):
         black-box optimizer is "thinking" by exposing its quantum measurement
         structure.
 
-        No arguments — operates on the last optimization run.
+        Requires Pro license. Get one at https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02
         """
         global _last_landscape, _last_result
+
+        # --- LICENSE CHECK ---
+        gate = check_tool_access("quantaoptima_observe")
+        if gate:
+            return gate
 
         if _last_result is None:
             return json.dumps({"error": "No optimization run yet. Call quantaoptima_optimize first."})
@@ -431,6 +491,8 @@ def _register_tools(mcp):
 
         Describes what happened, how quantum operators contributed,
         and whether the result is likely optimal.
+
+        Available on all tiers (Community, Pro, Enterprise).
         """
         global _last_result
 
@@ -438,6 +500,7 @@ def _register_tools(mcp):
             return json.dumps({"error": "No optimization run yet."})
 
         r = _last_result
+        license = load_license()
         entropy_reduction = (
             r.entropy_trajectory[0] - r.entropy_trajectory[-1]
             if len(r.entropy_trajectory) >= 2 else 0
@@ -445,7 +508,7 @@ def _register_tools(mcp):
         avg_interference = float(np.mean(r.interference_trajectory)) if r.interference_trajectory else 0
         peak_coherence = float(np.max(r.coherence_trajectory)) if r.coherence_trajectory else 0
 
-        return json.dumps({
+        response = {
             "overview": {
                 "iterations": r.n_iterations,
                 "evaluations": r.n_function_evals,
@@ -472,21 +535,37 @@ def _register_tools(mcp):
                 "best_point": [round(x, 8) for x in r.best_solution.tolist()],
                 "dimensionality": len(r.best_solution),
             },
-        }, indent=2)
+        }
+
+        # Cross-sell for community users
+        if license.tier == "community":
+            response["pro_features"] = {
+                "message": "Want deeper insights? Pro unlocks the observe tool for full landscape analysis, phase transition detection, and coherence-interference correlation.",
+                "url": "https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02",
+            }
+
+        return json.dumps(response, indent=2)
 
 
     @mcp.tool(name="quantaoptima_audit")
     async def audit(export_path: str | None = None) -> str:
         """
-        Verify the cryptographic audit trail from the last optimization.
+        [PRO] Verify the cryptographic audit trail from the last optimization.
 
         Each step is HMAC-SHA256 signed and hash-chained. Any tampering
         invalidates subsequent signatures.
+
+        Requires Pro license. Get one at https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02
 
         Args:
             export_path: Optional file path to export audit JSON.
         """
         global _last_audit
+
+        # --- LICENSE CHECK ---
+        gate = check_tool_access("quantaoptima_audit")
+        if gate:
+            return gate
 
         if _last_audit is None:
             return json.dumps({"error": "No optimization run yet."})
@@ -494,6 +573,12 @@ def _register_tools(mcp):
         summary = _last_audit.summary()
 
         if export_path:
+            license = load_license()
+            if not license.limits.get("audit_export", False):
+                return json.dumps({
+                    "error": "Audit export requires Pro license.",
+                    "upgrade_url": "https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02",
+                })
             _last_audit.export_json(export_path)
             summary["exported_to"] = export_path
 
@@ -502,6 +587,46 @@ def _register_tools(mcp):
             summary["last_block"] = _last_audit.chain[-1].to_dict()
 
         return json.dumps(summary, indent=2, default=str)
+
+
+    @mcp.tool(name="quantaoptima_status")
+    async def status() -> str:
+        """
+        Check your QuantaOptima license status and available features.
+
+        Shows current tier, limits, available tools, and upgrade options.
+        """
+        clear_license_cache()  # Always re-check on status call
+        license = load_license()
+        limits = license.limits
+
+        return json.dumps({
+            "license": {
+                "tier": license.tier,
+                "label": limits["label"],
+                "email": license.email,
+                "message": license.message,
+                "expires": license.expires if license.expires else "never",
+            },
+            "limits": {
+                "max_dimensions": limits["max_dimensions"],
+                "max_iterations": limits["max_iterations"],
+                "max_population": limits["max_population"],
+                "objectives": sorted(limits["objectives"]),
+                "custom_objectives": limits["custom_objectives"],
+                "audit_export": limits["audit_export"],
+            },
+            "tools_available": sorted(limits["tools"]),
+            "usage_this_session": _usage_counter,
+            "upgrade": (
+                {
+                    "message": "Upgrade to Pro for full power: all objectives, 100 dims, 5000 iters, benchmarking, observability, and audit.",
+                    "url": "https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02",
+                    "price": "$29/month or $199/year",
+                }
+                if license.tier == "community" else None
+            ),
+        }, indent=2)
 
 
 # ============================================================

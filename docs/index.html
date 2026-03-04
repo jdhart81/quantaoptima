@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QuantaOptima — Quantum-Inspired Optimization</title>
-<meta name="description" content="Black-box optimization that uses 7-31x fewer function evaluations. MCP server for Claude and LLM agents.">
+<meta name="description" content="Black-box optimization that uses 7-31x fewer function evaluations. MCP server for Claude and LLM agents. Free tier available.">
 <style>
 :root {
   --bg: #0a0a0f;
@@ -44,12 +44,33 @@ a:hover { text-decoration: underline; }
 section { padding: 60px 0; }
 section h2 { font-size: 1.75rem; margin-bottom: 24px; font-weight: 600; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
 
 /* Cards */
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
 .card h3 { font-size: 1.1rem; margin-bottom: 8px; }
 .card p { color: var(--muted); font-size: 0.95rem; }
 .card .tag { display: inline-block; background: rgba(99,102,241,0.15); color: var(--accent2); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 8px; }
+
+/* Pricing */
+.pricing-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; text-align: center; position: relative; transition: border-color 0.3s, transform 0.3s; }
+.pricing-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+.pricing-card.featured { border-color: var(--orange); }
+.pricing-card.featured::before { content: 'MOST POPULAR'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--orange); color: #000; padding: 4px 16px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; }
+.pricing-card .tier-name { font-size: 1.1rem; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
+.pricing-card .price { font-size: 2.5rem; font-weight: 700; margin: 16px 0 4px; }
+.pricing-card .price span { font-size: 1rem; font-weight: 400; color: var(--muted); }
+.pricing-card .annual { font-size: 0.85rem; color: var(--muted); margin-bottom: 24px; }
+.pricing-card ul { list-style: none; text-align: left; margin: 24px 0; }
+.pricing-card ul li { padding: 6px 0; font-size: 0.9rem; color: var(--text); }
+.pricing-card ul li::before { content: '✓ '; color: var(--green); font-weight: 700; }
+.pricing-card ul li.locked::before { content: '✗ '; color: #555; }
+.pricing-card ul li.locked { color: #555; }
+.pricing-card .btn { display: inline-block; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 0.95rem; transition: opacity 0.2s; }
+.pricing-card .btn:hover { opacity: 0.9; text-decoration: none; }
+.btn-free { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+.btn-pro { background: var(--orange); color: #000; }
+.btn-enterprise { background: var(--accent); color: #fff; }
 
 /* Code block */
 .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; overflow-x: auto; }
@@ -75,10 +96,11 @@ td { font-family: var(--mono); font-size: 0.9rem; }
 /* Footer */
 footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .hero h1 { font-size: 2rem; }
   .stats { grid-template-columns: 1fr; }
   .grid2 { grid-template-columns: 1fr; }
+  .grid3 { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -100,7 +122,7 @@ footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: cente
       <div class="label">fewer evaluations vs. Differential Evolution (Ackley d=20)</div>
     </div>
     <div class="stat">
-      <div class="number">5</div>
+      <div class="number">6</div>
       <div class="label">MCP tools for any LLM agent</div>
     </div>
     <div class="stat">
@@ -108,6 +130,66 @@ footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: cente
       <div class="label">dependencies beyond NumPy</div>
     </div>
   </div>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <h2 style="text-align:center;">Pricing</h2>
+    <p style="text-align:center; color:var(--muted); margin-bottom:32px;">Start free. Upgrade when you need more power.</p>
+
+    <div class="grid3">
+      <div class="pricing-card">
+        <div class="tier-name">Community</div>
+        <div class="price">$0 <span>/forever</span></div>
+        <div class="annual">&nbsp;</div>
+        <ul>
+          <li>3 objectives (Sphere, Rastrigin, Rosenbrock)</li>
+          <li>Up to 10 dimensions</li>
+          <li>Up to 100 iterations</li>
+          <li>optimize + explain tools</li>
+          <li>Full Python API</li>
+          <li class="locked">Benchmark comparisons</li>
+          <li class="locked">Observability / AI Safety</li>
+          <li class="locked">Audit export</li>
+        </ul>
+        <a href="https://pypi.org/project/quantaoptima/" class="btn btn-free">Install Free</a>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="tier-name">Pro</div>
+        <div class="price">$29 <span>/month</span></div>
+        <div class="annual">or $199/year (save 43%)</div>
+        <ul>
+          <li>All 6 objectives</li>
+          <li>Up to 100 dimensions</li>
+          <li>Up to 5,000 iterations</li>
+          <li>All 6 MCP tools</li>
+          <li>Benchmark vs. classical methods</li>
+          <li>Full observability / AI Safety</li>
+          <li>Audit export (JSON)</li>
+          <li>Email support</li>
+        </ul>
+        <a href="https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02" class="btn btn-pro">$29/month</a>
+        <a href="https://buy.stripe.com/00w7sL7BQ2OQ97YfOQfYY03" class="btn btn-free" style="margin-top:8px;display:inline-block;">$199/year (save 43%)</a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="tier-name">Enterprise</div>
+        <div class="price">Custom</div>
+        <div class="annual">Annual contract</div>
+        <ul>
+          <li>Everything in Pro</li>
+          <li>Unlimited dimensions</li>
+          <li>Unlimited iterations</li>
+          <li>Custom objective functions</li>
+          <li>White-label deployment</li>
+          <li>Priority support + SLA</li>
+          <li>On-premise option</li>
+          <li>Patent license included</li>
+        </ul>
+        <a href="mailto:hartjustin6@gmail.com?subject=QuantaOptima Enterprise" class="btn btn-enterprise">Contact Sales</a>
+      </div>
+    </div>
+  </section>
 
   <section>
     <h2>Benchmark Results</h2>
@@ -190,6 +272,7 @@ footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: cente
   </section>
 
   <div class="cta">
+    <a href="https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02" class="btn" style="background:var(--orange);color:#000;">Get Pro — $29/mo</a>
     <a href="https://github.com/justinhart/quantaoptima" class="btn">View on GitHub</a>
     <a href="https://pypi.org/project/quantaoptima/" class="btn">PyPI Package</a>
   </div>
