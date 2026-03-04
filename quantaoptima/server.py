@@ -678,8 +678,8 @@ def _register_tools(mcp):
             ),
             "subscription": (
                 {
-                    "manage_url": "https://billing.stripe.com/p/login/00g14NaZHa5mfW89AA",
-                    "cancel_url": "https://billing.stripe.com/p/login/00g14NaZHa5mfW89AA",
+                    "manage_url": "https://billing.stripe.com/p/login/28EdR9g8m2OQesi468fYY00",
+                    "cancel_url": "https://billing.stripe.com/p/login/28EdR9g8m2OQesi468fYY00",
                     "message": (
                         "Manage or cancel your subscription anytime at the link above. "
                         "Cancellation takes effect at the end of your current billing period."
