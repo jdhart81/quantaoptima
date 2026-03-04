@@ -15,3 +15,12 @@ build/
 .stripe_config.json
 quantaoptima.key
 *.key
+
+# === CONFIDENTIAL — never commit ===
+QuantaOptima_Patent_Analysis.md
+QuantaOptima_Paper.md
+EVIDENCE_PACKAGE.md
+MONETIZATION.md
+lean/
+*.pdf
+QuantaOptima_Project_Review.docx
