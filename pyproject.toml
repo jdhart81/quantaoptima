@@ -46,7 +46,7 @@ benchmarks = [
     "scipy>=1.9",
 ]
 all = [
-    "quantaoptima[mcp,benchmarks]",
+    "quantaoptima[benchmarks]",
 ]
 dev = [
     "quantaoptima[all]",
