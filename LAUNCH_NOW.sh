@@ -90,8 +90,8 @@ pip install quantaoptima
 \`\`\`
 
 ### Get Pro
-- Monthly: https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02
-- Annual: https://buy.stripe.com/00w7sL7BQ2OQ97YfOQfYY03
+- Monthly: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
+- Annual: https://buy.stripe.com/4gM14nbS6exycka5acfYY05
 " 2>/dev/null || echo "  Release may already exist"
 echo "  ✓ Release created"
 
@@ -106,7 +106,7 @@ echo ""
 echo "YOUR LIVE LINKS:"
 echo "  GitHub:  https://github.com/${REPO_NAME}"
 echo "  Pages:   https://$(echo $REPO_NAME | cut -d'/' -f1).github.io/quantaoptima/"
-echo "  Stripe:  https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02"
+echo "  Stripe:  https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04"
 echo ""
 echo "OPTIONAL NEXT STEPS:"
 echo "  1. PyPI upload:  twine upload dist/*"

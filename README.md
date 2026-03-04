@@ -20,7 +20,7 @@ pip install quantaoptima
 | Observability / AI Safety | — | ✓ | ✓ |
 | Audit Export | — | ✓ | ✓ |
 | Support | Community | Email | Priority + SLA |
-| | [Install Free](https://pypi.org/project/quantaoptima/) | [Get Pro](https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02) | [Contact](mailto:hartjustin6@gmail.com) |
+| | [Install Free](https://pypi.org/project/quantaoptima/) | [Get Pro](https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04) | [Contact](mailto:hartjustin6@gmail.com) |
 
 Annual Pro: **$199/year** (save 43%)
 

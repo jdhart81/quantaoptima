@@ -81,7 +81,7 @@ Then ask Claude: "Optimize the Rastrigin function in 20 dimensions and explain w
 The `quantaoptima_observe` tool is interesting from a safety perspective — it exposes the optimizer's internal "reasoning" through entropy trajectories and interference metrics, essentially making black-box optimization transparent.
 
 GitHub: https://github.com/justinhart/quantaoptima
-Pro: https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02
+Pro: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
 
 ---
 
@@ -98,7 +98,7 @@ Free tier available. Pro unlocks all features for $29/mo.
 
 **Install:** `pip install quantaoptima`
 
-**Links:** [GitHub](https://github.com/justinhart/quantaoptima) | [Paper](https://github.com/justinhart/quantaoptima/blob/main/QuantaOptima_Paper.md) | [Lean Proofs](https://github.com/justinhart/quantaoptima/tree/main/lean) | [Get Pro](https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02)
+**Links:** [GitHub](https://github.com/justinhart/quantaoptima) | [Paper](https://github.com/justinhart/quantaoptima/blob/main/QuantaOptima_Paper.md) | [Lean Proofs](https://github.com/justinhart/quantaoptima/tree/main/lean) | [Get Pro](https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04)
 
 ---
 
@@ -164,7 +164,7 @@ dH/dλ = -Γ(t), where Γ ≥ 0 is the interference advantage.
 Translation: quantum-inspired selection provably reduces entropy faster than classical selection when phases are aligned with fitness.
 
 GitHub: https://github.com/justinhart/quantaoptima
-Pro: https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02
+Pro: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
 
 ---
 
@@ -190,7 +190,7 @@ The monetization story is interesting: the MCP server itself handles the upgrade
 If your team spends money on hyperparameter sweeps or simulation loops, this might save you 90% of those evaluation costs.
 
 GitHub: https://github.com/justinhart/quantaoptima
-Get Pro: https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02
+Get Pro: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
 
 `pip install quantaoptima`
 

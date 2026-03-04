@@ -122,8 +122,8 @@ gh release create v0.2.0 dist/* \
 - \`quantaoptima_status\` — check license tier and available features
 
 ### Get Pro
-- Monthly: https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02
-- Annual: https://buy.stripe.com/00w7sL7BQ2OQ97YfOQfYY03
+- Monthly: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
+- Annual: https://buy.stripe.com/4gM14nbS6exycka5acfYY05
 "
 echo "  ✓ Release v0.2.0 created"
 
@@ -165,8 +165,8 @@ echo "YOUR LIVE LINKS:"
 echo "  GitHub:   https://github.com/$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo 'justinhart/quantaoptima')"
 echo "  PyPI:     https://pypi.org/project/quantaoptima/"
 echo "  Pages:    https://justinhart.github.io/quantaoptima/"
-echo "  Stripe Monthly: https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02"
-echo "  Stripe Annual:  https://buy.stripe.com/00w7sL7BQ2OQ97YfOQfYY03"
+echo "  Stripe Monthly: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04"
+echo "  Stripe Annual:  https://buy.stripe.com/4gM14nbS6exycka5acfYY05"
 echo ""
 echo "NEXT: Post your launch content → see LAUNCH_POSTS.md"
 echo ""

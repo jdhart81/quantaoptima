@@ -322,7 +322,7 @@ def check_tool_access(tool_name: str) -> Optional[str]:
             f"The '{tool_name}' tool requires a Pro license. "
             f"You're on the {tier} tier."
         ),
-        "upgrade_url": "https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02",
+        "upgrade_url": "https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04",
         "hint": (
             "Set QUANTAOPTIMA_LICENSE env var or save your key to "
             "~/.quantaoptima/license.key"
@@ -373,6 +373,6 @@ def check_limits(
         "error": "limit_exceeded",
         "current_tier": limits["label"],
         "violations": violations,
-        "upgrade_url": "https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02",
+        "upgrade_url": "https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04",
         "hint": "Upgrade to Pro for higher limits and all objectives.",
     }, indent=2)
