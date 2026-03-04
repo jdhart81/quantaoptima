@@ -52,7 +52,7 @@ def _get_mcp():
         _FastMCP = FastMCP
         _mcp = FastMCP(
             "quantaoptima",
-            description=(
+            instructions=(
                 "Quantum-inspired black-box optimizer. Solves optimization problems "
                 "using 7-31x fewer function evaluations than classical methods. "
                 "Free tier: 3 objectives, 10 dims. Pro: full power. "
