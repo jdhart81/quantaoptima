@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to Pro — QuantaOptima</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --border: #1e1e2e;
+  --text: #e4e4ef;
+  --muted: #8888a0;
+  --accent: #6366f1;
+  --accent2: #818cf8;
+  --green: #34d399;
+  --orange: #fb923c;
+  --mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.7; min-height: 100vh; }
+a { color: var(--accent2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.container { max-width: 680px; margin: 0 auto; padding: 0 24px; }
+
+.hero {
+  padding: 80px 0 40px;
+  text-align: center;
+}
+.hero .check {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: rgba(52, 211, 153, 0.12);
+  border: 2px solid var(--green);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 24px;
+  font-size: 2.5rem;
+}
+.hero h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.hero .subtitle {
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+.card h2 {
+  font-size: 1.15rem;
+  margin-bottom: 16px;
+  color: var(--green);
+}
+.card h3 {
+  font-size: 1rem;
+  margin: 20px 0 8px;
+  color: var(--accent2);
+}
+.card p, .card li {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin-bottom: 8px;
+}
+.card code {
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--accent2);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+}
+.card pre {
+  background: #0d0d14;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--text);
+  margin: 12px 0;
+  line-height: 1.5;
+}
+.card ol, .card ul {
+  padding-left: 20px;
+}
+.card li {
+  margin-bottom: 12px;
+}
+
+.badge-pro {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid var(--accent);
+  color: var(--accent2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.unlocked-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+.unlocked-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+.unlocked-item .icon { color: var(--green); font-size: 1.1rem; }
+
+.manage-section {
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+.manage-section h3 {
+  color: var(--orange);
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+.btn-primary:hover { background: #4f46e5; text-decoration: none; }
+.btn-outline {
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.btn-outline:hover { border-color: var(--accent); color: var(--text); text-decoration: none; }
+.btn-cancel {
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+.btn-cancel:hover { border-color: #ef4444; text-decoration: none; }
+
+.btn-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.footer {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.footer a { color: var(--accent2); }
+
+.note {
+  background: rgba(251, 146, 60, 0.08);
+  border-left: 3px solid var(--orange);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+@media (max-width: 500px) {
+  .unlocked-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 1.5rem; }
+  .btn-group { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="hero">
+    <div class="check">&#10003;</div>
+    <div class="badge-pro">PRO</div>
+    <h1>Welcome to QuantaOptima Pro</h1>
+    <div class="subtitle">Your payment was successful. Here's how to activate your license.</div>
+  </div>
+
+  <!-- What's unlocked -->
+  <div class="card">
+    <h2>What You Just Unlocked</h2>
+    <div class="unlocked-grid">
+      <div class="unlocked-item"><span class="icon">&#10003;</span> 100 dimensions</div>
+      <div class="unlocked-item"><span class="icon">&#10003;</span> 5,000 iterations</div>
+      <div class="unlocked-item"><span class="icon">&#10003;</span> All 6 objectives</div>
+      <div class="unlocked-item"><span class="icon">&#10003;</span> Benchmarking vs scipy</div>
+      <div class="unlocked-item"><span class="icon">&#10003;</span> AI safety observability</div>
+      <div class="unlocked-item"><span class="icon">&#10003;</span> Cryptographic audit export</div>
+    </div>
+  </div>
+
+  <!-- Activation -->
+  <div class="card">
+    <h2>Activate Your License</h2>
+    <p>You'll receive your license key via email shortly. Once you have it:</p>
+
+    <h3>Option A: Environment Variable (recommended)</h3>
+    <p>Add to your shell profile (<code>~/.zshrc</code> or <code>~/.bashrc</code>):</p>
+    <pre>export QUANTAOPTIMA_LICENSE="your-license-key-here"</pre>
+    <p>Then restart your terminal and Claude Desktop.</p>
+
+    <h3>Option B: License File</h3>
+    <pre>mkdir -p ~/.quantaoptima
+echo "your-license-key-here" > ~/.quantaoptima/license.key</pre>
+    <p>Then restart Claude Desktop.</p>
+
+    <h3>Verify It Worked</h3>
+    <p>Ask Claude: <em>"Run quantaoptima status"</em> &mdash; you should see <code>"tier": "pro"</code></p>
+
+    <div class="note">
+      <strong>Note:</strong> If you don't receive your key within a few minutes, email
+      <a href="mailto:hartjustin6@gmail.com">hartjustin6@gmail.com</a> with your Stripe receipt
+      and we'll get you activated right away.
+    </div>
+  </div>
+
+  <!-- Quick Start -->
+  <div class="card">
+    <h2>Try Your New Powers</h2>
+    <p>Here are some things to try now that you're on Pro:</p>
+    <pre># High-dimensional optimization
+"Optimize rastrigin in 50 dimensions with 2000 iterations"
+
+# Head-to-head benchmark
+"Benchmark QuantaOptima against scipy on ackley in 20 dimensions"
+
+# AI safety observability
+"Run optimize on griewank, then observe the landscape"
+
+# Cryptographic audit export
+"Run optimize on levy, then audit and export the trail"</pre>
+  </div>
+
+  <!-- Manage Subscription -->
+  <div class="card">
+    <h2>Manage Your Subscription</h2>
+    <p>Your Pro subscription renews automatically. You can manage it anytime:</p>
+
+    <div class="btn-group">
+      <a href="https://billing.stripe.com/p/login/00g14NaZHa5mfW89AA" class="btn btn-outline">
+        Manage Subscription
+      </a>
+      <a href="https://billing.stripe.com/p/login/00g14NaZHa5mfW89AA" class="btn btn-cancel">
+        Cancel Subscription
+      </a>
+    </div>
+
+    <div class="manage-section">
+      <h3>From Claude Desktop</h3>
+      <p>You (or any AI agent using your MCP server) can also manage your subscription by asking:</p>
+      <pre>"Show my QuantaOptima subscription status"
+"How do I cancel my QuantaOptima subscription?"</pre>
+      <p>The agent will provide your Stripe customer portal link.</p>
+    </div>
+
+    <div class="manage-section">
+      <h3>Cancellation Policy</h3>
+      <p>Cancel anytime &mdash; no questions asked. When you cancel:</p>
+      <ul>
+        <li>Your Pro access continues until the end of your current billing period</li>
+        <li>After that, you'll automatically revert to the free Community tier</li>
+        <li>Your optimization history and results are never deleted</li>
+        <li>You can re-subscribe at any time to restore Pro access</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>QuantaOptima &mdash; Quantum-Inspired Optimization</p>
+    <p><a href="https://github.com/jdhart81/quantaoptima">GitHub</a> &bull;
+       <a href="https://jdhart81.github.io/quantaoptima/">Docs</a> &bull;
+       <a href="mailto:hartjustin6@gmail.com">Support</a></p>
+    <p style="margin-top: 8px;">Need help? Email <a href="mailto:hartjustin6@gmail.com">hartjustin6@gmail.com</a></p>
+  </div>
+</div>
+
+</body>
+</html>

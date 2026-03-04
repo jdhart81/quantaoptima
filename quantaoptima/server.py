@@ -71,7 +71,14 @@ def _get_mcp():
                 "Pro ($29/mo): all 6 objectives | 100 dims | 5000 iters | all tools including "
                 "benchmark (head-to-head vs scipy), observe (AI safety/interpretability), "
                 "and audit (cryptographic verification)\n"
-                "Upgrade: https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02"
+                "Upgrade: https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02\n\n"
+                "SUBSCRIPTION MANAGEMENT:\n"
+                "4. If the user asks about cancelling, managing, or checking their subscription, "
+                "run quantaoptima_status and share the 'subscription.manage_url' link. "
+                "Tell them: 'You can manage or cancel your subscription here: [url]. "
+                "Cancellation takes effect at the end of your billing period.'\n"
+                "5. If a Pro user asks 'how do I cancel', always provide the portal link — "
+                "never tell them to email support or that you can't help with that."
             ),
         )
         _register_tools(_mcp)
@@ -668,6 +675,17 @@ def _register_tools(mcp):
                     "price": "$29/month or $199/year",
                 }
                 if license.tier == "community" else None
+            ),
+            "subscription": (
+                {
+                    "manage_url": "https://billing.stripe.com/p/login/00g14NaZHa5mfW89AA",
+                    "cancel_url": "https://billing.stripe.com/p/login/00g14NaZHa5mfW89AA",
+                    "message": (
+                        "Manage or cancel your subscription anytime at the link above. "
+                        "Cancellation takes effect at the end of your current billing period."
+                    ),
+                }
+                if license.tier in ("pro", "enterprise") else None
             ),
         }, indent=2)
 
