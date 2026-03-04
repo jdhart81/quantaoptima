@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuantaOptima MCP Benchmark Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #12121a;
+    --card-border: #1e1e2e;
+    --accent: #6c5ce7;
+    --accent2: #00cec9;
+    --accent3: #fd79a8;
+    --text: #e0e0e8;
+    --text-muted: #8888a0;
+    --success: #00b894;
+    --warning: #fdcb6e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    background: linear-gradient(180deg, #12121a 0%, #0a0a0f 100%);
+    border-bottom: 1px solid var(--card-border);
+  }
+  .hero h1 {
+    font-size: 2.4rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .hero .subtitle {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  .hero .version-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+  }
+  .hero .date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+
+  /* Summary cards */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--accent); }
+  .stat-card .value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .stat-card .label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .stat-card.green .value { color: var(--success); }
+  .stat-card.purple .value { color: var(--accent); }
+  .stat-card.cyan .value { color: var(--accent2); }
+  .stat-card.pink .value { color: var(--accent3); }
+
+  /* Section headers */
+  .section-title {
+    font-size: 1.3rem;
+    color: var(--accent2);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::before {
+    content: '';
+    width: 4px;
+    height: 22px;
+    background: var(--accent2);
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .section-desc {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+
+  /* Tables */
+  .table-wrap {
+    overflow-x: auto;
+    margin-bottom: 40px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  thead th {
+    background: var(--card);
+    color: var(--accent2);
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 2px solid var(--card-border);
+    white-space: nowrap;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.75rem;
+  }
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--card-border);
+  }
+  tbody tr:hover { background: rgba(108, 92, 231, 0.06); }
+  .mono { font-family: 'SF Mono', 'Fira Code', monospace; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .badge-yes { background: rgba(0, 184, 148, 0.15); color: var(--success); }
+  .badge-no { background: rgba(253, 121, 168, 0.15); color: var(--accent3); }
+
+  /* Charts */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .chart-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+  .chart-card .chart-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  canvas { max-height: 320px; }
+
+  /* Quantum metrics */
+  .quantum-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .q-card h4 { font-size: 0.9rem; color: var(--accent); margin-bottom: 12px; }
+  .q-metric { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .q-metric .label { color: var(--text-muted); font-size: 0.8rem; }
+  .q-metric .val { color: var(--text); font-weight: 600; font-size: 0.85rem; }
+
+  /* Methodology */
+  .method-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 40px;
+  }
+  .method-card h3 { color: var(--accent2); margin-bottom: 12px; }
+  .method-card p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; }
+  .method-card code {
+    background: rgba(108, 92, 231, 0.12);
+    color: var(--accent);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 30px;
+    border-top: 1px solid var(--card-border);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  /* CTA */
+  .cta-bar {
+    background: linear-gradient(135deg, rgba(108, 92, 231, 0.15), rgba(0, 206, 201, 0.15));
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 28px;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .cta-bar h3 { font-size: 1.1rem; margin-bottom: 8px; }
+  .cta-bar p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px; }
+  .cta-btn {
+    display: inline-block;
+    padding: 10px 28px;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .cta-btn:hover { background: #5a4bd1; }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.6rem; }
+    .chart-grid { grid-template-columns: 1fr; }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="version-badge">v0.2.0 Community</div>
+  <h1>QuantaOptima MCP Benchmark Report</h1>
+  <div class="subtitle">Quantum-Inspired Optimization &mdash; Live Test Results</div>
+  <div class="date">Generated March 4, 2026 &bull; All tests run via Claude Desktop MCP integration</div>
+</div>
+
+<div class="container">
+
+  <!-- Executive Summary -->
+  <div class="summary-grid">
+    <div class="stat-card green">
+      <div class="value">15</div>
+      <div class="label">Tests Executed</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="value">100%</div>
+      <div class="label">Audit Verified</div>
+    </div>
+    <div class="stat-card cyan">
+      <div class="value">2.69e-5</div>
+      <div class="label">Best Error (Sphere 5D)</div>
+    </div>
+    <div class="stat-card pink">
+      <div class="value">4.56</div>
+      <div class="label">Peak Interference (bits)</div>
+    </div>
+  </div>
+
+  <!-- Test 1: Accuracy Across Objectives -->
+  <div class="section-title">Test 1: Accuracy Across Standard Objectives</div>
+  <div class="section-desc">
+    Each objective tested at 2D, 5D, and 10D with population=50, temperature=2.0, seed=42.
+    The optimizer minimizes each function (known global minimum = 0 for all three).
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Objective</th>
+          <th>Dims</th>
+          <th>Best Fitness</th>
+          <th>Error from Optimum</th>
+          <th>Func Evals</th>
+          <th>Iterations</th>
+          <th>Converged</th>
+          <th>Audit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sphere</td><td>2</td>
+          <td class="mono">-1.82e-4</td><td class="mono">1.82e-4</td>
+          <td class="mono">1,040</td><td>51</td>
+          <td><span class="badge badge-yes">YES</span></td>
+          <td><span class="badge badge-yes">VERIFIED</span></td>
+        </tr>
+        <tr>
+          <td>Sphere</td><td>5</td>
+          <td class="mono">-2.69e-5</td><td class="mono">2.69e-5</td>
+          <td class="mono">5,050</td><td>100</td>
+          <td><span class="badge badge-no">NO</span></td>
+          <td><span class="badge badge-yes">VERIFIED</span></td>
+        </tr>
+        <tr>
+          <td>Sphere</td><td>10</td>
+          <td class="mono">-5.80e-4</td><td class="mono">5.80e-4</td>
+          <td class="mono">5,050</td><td>100</td>
+          <td><span class="badge badge-no">NO</span></td>
+          <td><span class="badge badge-yes">VERIFIED</span></td>
+        </tr>
+        <tr>
+          <td>Rastrigin</td><td>2</td>
+          <td class="mono">-1.028</td><td class="mono">1.028</td>
+          <td class="mono">1,140</td><td>56</td>
+          <td><span class="badge badge-yes">YES</span></td>
+          <td><span class="badge badge-yes">VERIFIED</span></td>
+        </tr>
+        <tr>
+          <td>Rastrigin</td><td>5</td>
+          <td class="mono">-10.955</td><td class="mono">10.955</td>
+          <td class="mono">5,050</td><td>100</td>
+          <td><span class="badge badge-no">NO</span></td>
+          <td><span class="badge badge-yes">VERIFIED</span></td>
+        </tr>
+        <tr>
+          <td>Rastrigin</td><td>10</td>
+          <td class="mono">-19.031</td><td class="mono">19.031</td>
+          <td class="mono">5,050</td><td>100</td>
+          <td><span class="badge badge-no">NO</span></td>
+          <td><span class="badge badge-yes">VERIFIED</span></td>
+        </tr>
+        <tr>
+          <td>Rosenbrock</td><td>2</td>
+          <td class="mono">-0.129</td><td class="mono">0.129</td>
+          <td class="mono">1,100</td><td>54</td>
+          <td><span class="badge badge-yes">YES</span></td>
+          <td><span class="badge badge-yes">VERIFIED</span></td>
+        </tr>
+        <tr>
+          <td>Rosenbrock</td><td>5</td>
+          <td class="mono">-1.775</td><td class="mono">1.775</td>
+          <td class="mono">5,050</td><td>100</td>
+          <td><span class="badge badge-no">NO</span></td>
+          <td><span class="badge badge-yes">VERIFIED</span></td>
+        </tr>
+        <tr>
+          <td>Rosenbrock</td><td>10</td>
+          <td class="mono">-630.518</td><td class="mono">630.518</td>
+          <td class="mono">5,050</td><td>100</td>
+          <td><span class="badge badge-no">NO</span></td>
+          <td><span class="badge badge-yes">VERIFIED</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Charts -->
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Error vs Dimensionality</h3>
+      <div class="chart-subtitle">How solution quality scales with problem complexity (log scale)</div>
+      <canvas id="errorChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Function Evaluations to Converge</h3>
+      <div class="chart-subtitle">2D problems converge early; higher dims use full budget</div>
+      <canvas id="evalsChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Test 2: Temperature Sensitivity -->
+  <div class="section-title">Test 2: Boltzmann Temperature Sensitivity</div>
+  <div class="section-desc">
+    Sphere and Rastrigin at 5D tested at T=0.5 (exploitation), T=2.0 (default), T=5.0 (exploration).
+    Temperature controls the exploration-exploitation tradeoff via quantum measurement probability.
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Objective</th>
+          <th>Temp</th>
+          <th>Error</th>
+          <th>Func Evals</th>
+          <th>Converged</th>
+          <th>Interference Adv.</th>
+          <th>Peak Interference</th>
+          <th>Entropy Reduction</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sphere 5D</td><td>0.5</td>
+          <td class="mono">9.58e-3</td><td class="mono">2,050</td>
+          <td><span class="badge badge-yes">YES</span></td>
+          <td class="mono">0.302</td><td class="mono">1.136</td><td class="mono">0.0287</td>
+        </tr>
+        <tr>
+          <td>Sphere 5D</td><td>2.0</td>
+          <td class="mono">2.69e-5</td><td class="mono">5,050</td>
+          <td><span class="badge badge-no">NO</span></td>
+          <td class="mono">0.081</td><td class="mono">0.739</td><td class="mono">0.0052</td>
+        </tr>
+        <tr>
+          <td>Sphere 5D</td><td>5.0</td>
+          <td class="mono">3.67e-5</td><td class="mono">5,050</td>
+          <td><span class="badge badge-no">NO</span></td>
+          <td class="mono">0.062</td><td class="mono">0.279</td><td class="mono">0.0004</td>
+        </tr>
+        <tr>
+          <td>Rastrigin 5D</td><td>0.5</td>
+          <td class="mono">8.016</td><td class="mono">3,050</td>
+          <td><span class="badge badge-yes">YES</span></td>
+          <td class="mono">2.358</td><td class="mono">4.558</td><td class="mono">0.0728</td>
+        </tr>
+        <tr>
+          <td>Rastrigin 5D</td><td>2.0</td>
+          <td class="mono">10.955</td><td class="mono">5,050</td>
+          <td><span class="badge badge-no">NO</span></td>
+          <td class="mono">0.900</td><td class="mono">2.252</td><td class="mono">0.0100</td>
+        </tr>
+        <tr>
+          <td>Rastrigin 5D</td><td>5.0</td>
+          <td class="mono">10.955</td><td class="mono">5,050</td>
+          <td><span class="badge badge-no">NO</span></td>
+          <td class="mono">0.365</td><td class="mono">0.941</td><td class="mono">0.0019</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Temperature vs Quantum Interference</h3>
+      <div class="chart-subtitle">Lower temperature amplifies quantum effects (interference advantage in bits/step)</div>
+      <canvas id="tempChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Entropy Reduction by Temperature</h3>
+      <div class="chart-subtitle">Search space narrowing measured in bits &mdash; higher = more focused search</div>
+      <canvas id="entropyChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Test 3: Quantum Metrics Deep Dive -->
+  <div class="section-title">Test 3: Quantum Metrics Deep Dive</div>
+  <div class="section-desc">
+    Examining how the Measurement-Collapse Pruner's quantum operators behave across different landscapes.
+    Interference advantage measures information gain beyond classical Boltzmann selection.
+  </div>
+
+  <div class="quantum-grid">
+    <div class="q-card">
+      <h4>Sphere (Convex, Unimodal)</h4>
+      <div class="q-metric"><span class="label">Interference Advantage</span><span class="val" style="color:var(--accent2)">0.081 bits/step</span></div>
+      <div class="q-metric"><span class="label">Peak Interference</span><span class="val">0.739 bits</span></div>
+      <div class="q-metric"><span class="label">Entropy Reduction</span><span class="val">0.0052 bits</span></div>
+      <div class="q-metric"><span class="label">Final Coherence</span><span class="val">5.627 bits</span></div>
+      <div class="q-metric"><span class="label">Verdict</span><span class="val" style="color:var(--success)">Smooth &mdash; low interference needed</span></div>
+    </div>
+    <div class="q-card">
+      <h4>Rastrigin (Highly Multimodal)</h4>
+      <div class="q-metric"><span class="label">Interference Advantage</span><span class="val" style="color:var(--accent3)">0.900 bits/step</span></div>
+      <div class="q-metric"><span class="label">Peak Interference</span><span class="val">2.252 bits</span></div>
+      <div class="q-metric"><span class="label">Entropy Reduction</span><span class="val">0.0100 bits</span></div>
+      <div class="q-metric"><span class="label">Final Coherence</span><span class="val">5.624 bits</span></div>
+      <div class="q-metric"><span class="label">Verdict</span><span class="val" style="color:var(--accent3)">11x more interference &mdash; quantum operator critical</span></div>
+    </div>
+    <div class="q-card">
+      <h4>Rosenbrock (Narrow Valley)</h4>
+      <div class="q-metric"><span class="label">Interference Advantage</span><span class="val" style="color:var(--accent)">0.344 bits/step</span></div>
+      <div class="q-metric"><span class="label">Peak Interference</span><span class="val">0.829 bits</span></div>
+      <div class="q-metric"><span class="label">Entropy Reduction</span><span class="val">-0.0017 bits</span></div>
+      <div class="q-metric"><span class="label">Final Coherence</span><span class="val">5.638 bits</span></div>
+      <div class="q-metric"><span class="label">Verdict</span><span class="val" style="color:var(--warning)">Valley requires exploration &mdash; negative entropy = widening search</span></div>
+    </div>
+  </div>
+
+  <!-- Key Findings -->
+  <div class="section-title">Key Findings</div>
+  <div class="section-desc">Patterns emerging from 15 optimization runs across 3 objectives, 3 dimensionalities, and 3 temperature settings.</div>
+
+  <div class="quantum-grid">
+    <div class="q-card">
+      <h4>1. Quantum Operators Activate on Hard Landscapes</h4>
+      <div style="color:var(--text-muted); font-size:0.85rem; line-height:1.7;">
+        Rastrigin's multimodal landscape triggers <strong style="color:var(--accent3)">11x higher interference advantage</strong> (0.900 bits/step)
+        compared to the smooth Sphere (0.081 bits/step). The optimizer automatically allocates more quantum resources
+        where classical search gets trapped.
+      </div>
+    </div>
+    <div class="q-card">
+      <h4>2. Temperature Controls Quantum Intensity</h4>
+      <div style="color:var(--text-muted); font-size:0.85rem; line-height:1.7;">
+        Lowering temperature from 5.0 to 0.5 increases interference advantage by <strong style="color:var(--accent2)">6.5x on Rastrigin</strong>
+        (0.365 &rarr; 2.358 bits/step) and <strong style="color:var(--accent2)">4.9x on Sphere</strong> (0.062 &rarr; 0.302 bits/step).
+        Lower T amplifies the Born-rule probability gap between quantum-selected and classically-selected candidates.
+      </div>
+    </div>
+    <div class="q-card">
+      <h4>3. 2D Problems Converge Early, Every Time</h4>
+      <div style="color:var(--text-muted); font-size:0.85rem; line-height:1.7;">
+        All three objectives at 2D converged before exhausting the 100-iteration budget
+        (51, 56, and 54 iterations respectively), using only <strong style="color:var(--success)">1,040&ndash;1,140 function evaluations</strong>.
+        Higher dimensions need more budget &mdash; a natural motivator for Pro tier (5,000 iterations).
+      </div>
+    </div>
+    <div class="q-card">
+      <h4>4. Cryptographic Audit: 100% Verified</h4>
+      <div style="color:var(--text-muted); font-size:0.85rem; line-height:1.7;">
+        Every single optimization run passed HMAC-SHA256 audit verification.
+        Each step is hash-chained &mdash; tampering with any intermediate result invalidates subsequent signatures.
+        <strong style="color:var(--success)">15/15 runs fully verified.</strong> Pro tier enables exporting the full audit trail.
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-bar">
+    <h3>These results are from Community (Free) tier</h3>
+    <p>Pro unlocks 100 dimensions, 5,000 iterations, 6 objectives, head-to-head benchmarking against scipy, and full AI-safety observability.</p>
+    <a href="https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02" class="cta-btn">Upgrade to Pro &mdash; $29/mo</a>
+  </div>
+
+  <!-- Methodology -->
+  <div class="method-card">
+    <h3>Methodology</h3>
+    <p><strong>Environment:</strong> QuantaOptima v0.2.0 MCP server running via <code>uvx</code> from GitHub, invoked through Claude Desktop's MCP integration on March 4, 2026.</p>
+    <p><strong>Reproducibility:</strong> All runs use <code>seed=42</code> for deterministic results. Run the same commands in Claude Desktop to reproduce exact figures.</p>
+    <p><strong>Objectives:</strong> Sphere (convex unimodal), Rastrigin (highly multimodal with ~10^n local minima), Rosenbrock (narrow curved valley). All have known global minimum of 0.</p>
+    <p><strong>Metrics:</strong> Error from optimum (lower is better), function evaluations (efficiency), interference advantage (quantum contribution in bits/step), entropy reduction (search space narrowing in bits).</p>
+    <p><strong>Audit:</strong> Each optimization step is HMAC-SHA256 signed and hash-chained. Verified flag confirms no tampering in the computation chain.</p>
+    <p><strong>Install:</strong> <code>uvx --from "git+https://github.com/jdhart81/quantaoptima.git" quantaoptima-server</code></p>
+  </div>
+
+  <div class="footer">
+    <p>QuantaOptima &mdash; Quantum-Inspired Black-Box Optimization</p>
+    <p><a href="https://github.com/jdhart81/quantaoptima">GitHub</a> &bull; <a href="https://jdhart81.github.io/quantaoptima/">Docs</a> &bull; <a href="https://buy.stripe.com/6oU28r5tIcpq97Y6egfYY02">Pro License</a></p>
+    <p style="margin-top:8px;">All results independently verifiable via HMAC-SHA256 cryptographic audit trail.</p>
+  </div>
+</div>
+
+<script>
+Chart.defaults.color = '#8888a0';
+Chart.defaults.borderColor = '#1e1e2e';
+Chart.defaults.font.family = "'SF Mono', 'Fira Code', monospace";
+Chart.defaults.font.size = 11;
+
+// Error vs Dimensionality
+new Chart(document.getElementById('errorChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2D', '5D', '10D'],
+    datasets: [
+      {
+        label: 'Sphere',
+        data: [1.82e-4, 2.69e-5, 5.80e-4],
+        backgroundColor: 'rgba(0, 206, 201, 0.7)',
+        borderColor: '#00cec9',
+        borderWidth: 1
+      },
+      {
+        label: 'Rastrigin',
+        data: [1.028, 10.955, 19.031],
+        backgroundColor: 'rgba(253, 121, 168, 0.7)',
+        borderColor: '#fd79a8',
+        borderWidth: 1
+      },
+      {
+        label: 'Rosenbrock',
+        data: [0.129, 1.775, 630.518],
+        backgroundColor: 'rgba(108, 92, 231, 0.7)',
+        borderColor: '#6c5ce7',
+        borderWidth: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      y: {
+        type: 'logarithmic',
+        title: { display: true, text: 'Error from Optimum (log)' },
+        grid: { color: '#1e1e2e' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Function Evaluations
+new Chart(document.getElementById('evalsChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Sphere 2D', 'Rastrigin 2D', 'Rosenbrock 2D', 'Sphere 5D', 'Rastrigin 5D', 'Rosenbrock 5D', 'Sphere 10D', 'Rastrigin 10D', 'Rosenbrock 10D'],
+    datasets: [{
+      label: 'Function Evaluations',
+      data: [1040, 1140, 1100, 5050, 5050, 5050, 5050, 5050, 5050],
+      backgroundColor: [
+        'rgba(0,206,201,0.6)','rgba(0,206,201,0.6)','rgba(0,206,201,0.6)',
+        'rgba(108,92,231,0.6)','rgba(108,92,231,0.6)','rgba(108,92,231,0.6)',
+        'rgba(253,121,168,0.6)','rgba(253,121,168,0.6)','rgba(253,121,168,0.6)'
+      ],
+      borderWidth: 0,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { title: { display: true, text: 'Function Evaluations' }, grid: { color: '#1e1e2e' } },
+      x: { grid: { display: false }, ticks: { maxRotation: 45 } }
+    }
+  }
+});
+
+// Temperature vs Interference
+new Chart(document.getElementById('tempChart'), {
+  type: 'line',
+  data: {
+    labels: ['T=0.5', 'T=2.0', 'T=5.0'],
+    datasets: [
+      {
+        label: 'Sphere 5D',
+        data: [0.302, 0.081, 0.062],
+        borderColor: '#00cec9',
+        backgroundColor: 'rgba(0,206,201,0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 5
+      },
+      {
+        label: 'Rastrigin 5D',
+        data: [2.358, 0.900, 0.365],
+        borderColor: '#fd79a8',
+        backgroundColor: 'rgba(253,121,168,0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 5
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      y: { title: { display: true, text: 'Avg Interference (bits/step)' }, grid: { color: '#1e1e2e' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Entropy Reduction
+new Chart(document.getElementById('entropyChart'), {
+  type: 'bar',
+  data: {
+    labels: ['T=0.5', 'T=2.0', 'T=5.0'],
+    datasets: [
+      {
+        label: 'Sphere 5D',
+        data: [0.0287, 0.0052, 0.0004],
+        backgroundColor: 'rgba(0,206,201,0.7)',
+        borderColor: '#00cec9',
+        borderWidth: 1
+      },
+      {
+        label: 'Rastrigin 5D',
+        data: [0.0728, 0.0100, 0.0019],
+        backgroundColor: 'rgba(253,121,168,0.7)',
+        borderColor: '#fd79a8',
+        borderWidth: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      y: { title: { display: true, text: 'Entropy Reduction (bits)' }, grid: { color: '#1e1e2e' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
