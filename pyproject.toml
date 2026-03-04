@@ -37,13 +37,11 @@ classifiers = [
 ]
 dependencies = [
     "numpy>=1.21",
-]
-
-[project.optional-dependencies]
-mcp = [
     "mcp[cli]>=1.0",
     "pydantic>=2.0",
 ]
+
+[project.optional-dependencies]
 benchmarks = [
     "scipy>=1.9",
 ]
@@ -60,10 +58,10 @@ dev = [
 quantaoptima-server = "quantaoptima.server:main"
 
 [project.urls]
-Homepage = "https://github.com/justinhart/quantaoptima"
-Documentation = "https://github.com/justinhart/quantaoptima#readme"
-Repository = "https://github.com/justinhart/quantaoptima"
-Issues = "https://github.com/justinhart/quantaoptima/issues"
+Homepage = "https://github.com/jdhart81/quantaoptima"
+Documentation = "https://github.com/jdhart81/quantaoptima#readme"
+Repository = "https://github.com/jdhart81/quantaoptima"
+Issues = "https://github.com/jdhart81/quantaoptima/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["quantaoptima"]
