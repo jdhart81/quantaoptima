@@ -6,51 +6,51 @@ Copy-paste these to get the word out. Post in this order for maximum signal.
 
 ## 1. Reddit r/MachineLearning (Post as [P] Project)
 
-**Title:** [P] QuantaOptima: Quantum-inspired optimizer that uses 7-31x fewer function evaluations — ships as freemium MCP server for Claude/LLM agents
+**Title:** [P] QuantaOptima: The first auditable black-box optimizer built as an MCP server for LLM agents
 
 **Body:**
 
-I've been working on an optimizer that applies quantum computing math (complex amplitudes, interference, measurement collapse) on classical hardware for black-box optimization.
+I built an optimization engine that ships as an MCP server — giving Claude or any LLM agent the ability to optimize parameters, benchmark results, and cryptographically verify every decision.
 
-The core idea: instead of evaluating thousands of candidates blindly, encode your population as a quantum-like superposition, evolve it through interference operators, then collapse to survivors using an entropy-constrained measurement. The math that makes Grover's algorithm quadratically faster gives you provably better selection per evaluation.
+**The problem:** AI agents are increasingly asked to tune hyperparameters and optimize configurations, but they have no native optimization tools. They brute-force, guess, or punt to you.
 
-**Results** (Wilcoxon signed-rank, p < 0.001):
+**What QuantaOptima does:**
 
-| Problem | d | QuantaOptima evals | Diff. Evolution evals | Speedup |
-|---|---|---|---|---|
-| Rastrigin | 10 | 1,200 | 9,400 | 7.8x |
-| Rosenbrock | 20 | 2,800 | 41,000 | 14.6x |
-| Ackley | 20 | 1,500 | 47,000 | 31.3x |
+- Quantum-inspired metaheuristic (encode population as quantum-like state → evolve via interference → collapse via entropy-constrained measurement)
+- Every step HMAC-SHA256 signed and hash-chained — full audit trail
+- Built-in interpretability: entropy trajectories, interference metrics, phase transition detection
+- 6 MCP tools: optimize, explain, benchmark (vs scipy), observe, audit, status
+- Reliably converges on all 6 standard benchmarks up to 100D
 
-**What's different from other quantum-inspired methods:**
-- Full entropy tracking — you can watch exactly how the optimizer narrows the search space
-- Cryptographic audit trail (HMAC-SHA256 hash chain) for verifiable optimization
-- Ships as an MCP server, so Claude or any LLM agent can call it as a tool
-- Core theorem formally verified in Lean 4 / Mathlib (via Aristotle)
-- Free tier to try it out, Pro tier ($29/mo) for full power
+**What it does NOT do:** outperform scipy's Dual Annealing on raw solution quality. DA finds better answers at similar eval budgets on standard benchmarks. We're transparent about that in the README.
 
-**Honest caveats:** This is strongest at d ≤ 50 with expensive objective functions. Precision doesn't match scipy on smooth unimodal problems. The scaling exponent is sub-linear but not as dramatic as the theoretical bound suggests.
+**What's actually novel:**
+1. First optimizer shipped as an MCP server (AI-agent native)
+2. Built-in HMAC-SHA256 audit chain (no other optimizer does this)
+3. Interference metric as an interpretability signal (bits of selection advantage from cross-solution correlations)
+
+If your agents need to optimize with auditability and interpretability, this is the tool. If you just need the best answer and don't care about the path, use scipy.
 
 `pip install quantaoptima`
 
-GitHub: https://github.com/justinhart/quantaoptima
+GitHub: https://github.com/jdhart81/quantaoptima
 
-Paper and Lean proofs included in the repo. Happy to discuss the math or take benchmark challenges.
+Free tier to try it. Pro ($29/mo) for full power. Happy to discuss the architecture or take feedback.
 
 ---
 
 ## 2. Reddit r/ClaudeAI
 
-**Title:** Built a freemium MCP server that gives Claude a quantum-inspired optimizer — solves problems using 10x fewer evaluations
+**Title:** Built an MCP server that gives Claude auditable optimization capabilities — free tier available
 
 **Body:**
 
-I built an MCP server that adds optimization capabilities to Claude. It uses quantum-inspired math to solve black-box optimization problems efficiently.
+I built an MCP server that adds black-box optimization to Claude with something no other optimizer has: a cryptographic audit trail and built-in interpretability.
 
 Setup takes 30 seconds:
 
 ```
-pip install quantaoptima[mcp]
+pip install quantaoptima
 ```
 
 Add to your claude_desktop_config.json:
@@ -65,40 +65,38 @@ Add to your claude_desktop_config.json:
 }
 ```
 
-Then ask Claude: "Optimize the Rastrigin function in 20 dimensions and explain what the quantum operators did."
+Then ask Claude: "Optimize the Rastrigin function in 10 dimensions, explain what the quantum operators did, and verify the audit trail."
 
-**Free tier gives you:**
-- 3 objectives (Sphere, Rastrigin, Rosenbrock)
-- Up to 10 dimensions, 100 iterations
-- optimize + explain tools
+**6 tools your agent gets:**
+- `optimize` — Run optimization on 6 benchmark functions
+- `explain` — Human-readable explanation of what happened
+- `benchmark` — Head-to-head vs scipy (Pro)
+- `observe` — Entropy trajectories, interference metrics, phase transitions (Pro)
+- `audit` — Verify HMAC-SHA256 cryptographic chain (Pro)
+- `status` — License check
 
-**Pro ($29/mo) unlocks:**
-- All 6 objectives, 100 dims, 5000 iters
-- Benchmark comparisons vs classical methods
-- Observability / AI safety telemetry
-- Cryptographic audit export
+**What makes it different from just calling scipy:** Every optimization step is cryptographically signed and hash-chained. The observe tool exposes how the optimizer explored the landscape — entropy, coherence, interference, phase transitions. It's interpretable optimization, not just a black box that spits out an answer.
 
-The `quantaoptima_observe` tool is interesting from a safety perspective — it exposes the optimizer's internal "reasoning" through entropy trajectories and interference metrics, essentially making black-box optimization transparent.
+**Free tier:** 3 objectives, 10 dims, 100 iters
+**Pro ($29/mo):** All 6 objectives, 100 dims, 5000 iters, all tools
 
-GitHub: https://github.com/justinhart/quantaoptima
+GitHub: https://github.com/jdhart81/quantaoptima
 Pro: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
 
 ---
 
 ## 3. HuggingFace (Discussion / Space)
 
-**Title:** QuantaOptima: Quantum-Inspired Black-Box Optimizer with Freemium MCP Server
+**Title:** QuantaOptima: Auditable Quantum-Inspired Optimizer as MCP Server for AI Agents
 
 **Summary:**
-QuantaOptima is a Python library and MCP server for quantum-inspired black-box optimization. It achieves 7-31x fewer function evaluations than classical methods (differential evolution, dual annealing) on standard benchmarks. The optimizer encodes populations as quantum-like states, evolves them through interference operators, and collapses to survivors via entropy-constrained measurement. Every run produces full observability telemetry (entropy, coherence, interference advantage) and a cryptographic audit trail.
+QuantaOptima is the first black-box optimizer built specifically for AI agents. It ships as an MCP server with 6 tools (optimize, explain, benchmark, observe, audit, status) and includes features no other optimizer has: HMAC-SHA256 cryptographic audit trails and built-in interpretability telemetry (entropy trajectories, interference metrics, phase transition detection). The quantum-inspired algorithm reliably converges across 6 standard benchmarks up to 100 dimensions. Free tier available, Pro unlocks full capabilities for $29/mo.
 
-Free tier available. Pro unlocks all features for $29/mo.
-
-**Tags:** optimization, quantum-inspired, mcp, llm-tools, black-box-optimization, ai-safety
+**Tags:** optimization, quantum-inspired, mcp, llm-tools, black-box-optimization, ai-safety, interpretability
 
 **Install:** `pip install quantaoptima`
 
-**Links:** [GitHub](https://github.com/justinhart/quantaoptima) | [Paper](https://github.com/justinhart/quantaoptima/blob/main/QuantaOptima_Paper.md) | [Lean Proofs](https://github.com/justinhart/quantaoptima/tree/main/lean) | [Get Pro](https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04)
+**Links:** [GitHub](https://github.com/jdhart81/quantaoptima) | [Get Pro](https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04)
 
 ---
 
@@ -106,64 +104,67 @@ Free tier available. Pro unlocks all features for $29/mo.
 
 **Post:**
 
-New MCP server: **quantaoptima** — quantum-inspired black-box optimizer with freemium model
+New MCP server: **quantaoptima** — auditable black-box optimizer for AI agents
 
-`pip install quantaoptima[mcp]` and add to your claude_desktop_config:
+`pip install quantaoptima` and add to your claude_desktop_config:
 
 ```json
 {"mcpServers": {"quantaoptima": {"command": "quantaoptima-server"}}}
 ```
 
-6 tools: optimize, benchmark, observe (AI safety telemetry), explain, audit (crypto hash chain), status (license check).
+6 tools: optimize, benchmark (vs scipy), observe (interpretability), explain, audit (crypto chain), status.
 
-**Free tier:** 3 objectives, 10 dims, 100 iters — enough to test and prove the speed.
-**Pro ($29/mo):** Full power, all objectives, 100 dims, 5000 iters, all tools.
+**Why this instead of just calling scipy from a script:**
+- Every step HMAC-SHA256 signed and hash-chained (auditable)
+- Built-in interpretability: entropy, coherence, interference, phase transitions
+- MCP-native: your agent can optimize, interpret, and verify without writing any code
+- Freemium: free tier to test, Pro ($29/mo) for full power
 
-What it does: solves optimization problems using 7-31x fewer function evaluations than scipy. Useful when your objective function is expensive (simulations, API calls, training runs).
+The `observe` tool is the interesting one — it exposes the optimizer's internal state as structured data. Your agent can understand *how* it explored the landscape, not just the final answer.
 
-The `quantaoptima_observe` tool is novel — it exposes the optimizer's internal state (entropy trajectory, interference advantage, phase transitions) as structured data. Interpretability for optimization.
-
-GitHub: https://github.com/justinhart/quantaoptima
+GitHub: https://github.com/jdhart81/quantaoptima
 
 ---
 
 ## 5. X/Twitter Thread
 
 **Tweet 1:**
-Built a quantum-inspired optimizer that uses 7-31x fewer function evaluations than classical methods.
+Built the first black-box optimizer designed for AI agents.
 
-Ships as a freemium MCP server for Claude/LLM agents.
+Ships as an MCP server with cryptographic audit trails and full interpretability.
+
+No other optimizer does this.
 
 `pip install quantaoptima`
 
-Free tier to try it. Pro for full power. Thread on how it works 🧵
+Thread on what makes it different 🧵
 
 **Tweet 2:**
-The core insight: encode your population as a quantum-like superposition. Apply interference operators that make good solutions constructively amplify each other. Then "measure" — collapse to survivors via an entropy-constrained PCA basis.
+Problem: AI agents are asked to optimize parameters constantly — hyperparameters, configs, calibration.
 
-Same math as Grover's algorithm, running on your laptop.
+But they have zero native optimization tools. They guess or brute-force it.
+
+QuantaOptima gives them 6 optimization tools through MCP. Setup takes 30 seconds.
 
 **Tweet 3:**
-Results on standard benchmarks:
-- Rastrigin d=10: 7.8x fewer evals
-- Rosenbrock d=20: 14.6x fewer evals
-- Ackley d=20: 31.3x fewer evals
+What makes it different from scipy:
 
-All p < 0.001 (Wilcoxon signed-rank test). Code + full benchmark suite in the repo.
+Every optimization step is HMAC-SHA256 signed and hash-chained. The observe tool exposes entropy trajectories, interference metrics, and phase transitions.
+
+It's interpretable, auditable optimization — not just a number at the end.
 
 **Tweet 4:**
-The MCP server means any LLM agent can use it as a tool. Ask Claude to "optimize my function" and it calls the optimizer directly.
+Honest take: scipy's Dual Annealing finds better solutions on standard benchmarks at similar eval budgets.
 
-Free tier gets you started. Pro ($29/mo) unlocks all 6 objectives, 100 dimensions, benchmarking, and an AI safety observability tool.
+But it can't talk to your AI agent, can't prove its work, and can't explain how it got there.
+
+Different tools for different problems.
 
 **Tweet 5:**
-Core theorem is formally verified in Lean 4 via @Aristotle_AI:
+Free tier: 3 objectives, 10 dims, 100 iters — enough to try it.
+Pro ($29/mo): all objectives, 100 dims, all 6 tools including benchmarking and audit.
 
-dH/dλ = -Γ(t), where Γ ≥ 0 is the interference advantage.
-
-Translation: quantum-inspired selection provably reduces entropy faster than classical selection when phases are aligned with fitness.
-
-GitHub: https://github.com/justinhart/quantaoptima
+GitHub: https://github.com/jdhart81/quantaoptima
 Pro: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
 
 ---
@@ -172,26 +173,26 @@ Pro: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
 
 **Post:**
 
-Excited to share QuantaOptima v0.2.0 — a quantum-inspired optimization engine with a freemium business model built in.
+Sharing QuantaOptima v0.2.0 — the first auditable black-box optimizer built for AI agents.
 
-The problem: black-box optimization (hyperparameter tuning, simulation-based design, portfolio optimization) burns enormous compute on function evaluations. Every eval costs time and money.
+The problem: AI agents are increasingly responsible for tuning hyperparameters, calibrating models, and optimizing configurations. But they have no native optimization tools — and classical optimizers can't explain their work or prove their decisions.
 
-The solution: apply quantum computing math (complex amplitudes, interference, measurement collapse) on classical hardware. The result is 7-31x fewer function evaluations on standard benchmarks.
+What QuantaOptima does differently:
 
-What makes this different:
-→ Ships as an MCP server — any AI agent (Claude, GPT, custom) can call it as a tool
-→ Full observability: entropy trajectories, interference metrics, phase transition detection
-→ Cryptographic audit trail: every optimization step is HMAC-SHA256 signed and hash-chained
-→ Core theorem formally verified in Lean 4
-→ Freemium model: Community tier is free, Pro ($29/mo) unlocks full power via Stripe
+→ Ships as an MCP server — any AI agent can call it as a tool through natural language
+→ Every optimization step is HMAC-SHA256 signed and hash-chained (tamper-evident audit trail)
+→ Built-in interpretability: entropy trajectories, interference metrics, phase transition detection
+→ Quantum-inspired algorithm that reliably converges across 6 benchmark functions up to 100 dimensions
 
-The monetization story is interesting: the MCP server itself handles the upgrade nudges. When a free user hits a limit, the tool response includes a Stripe checkout link. The AI agent surfaces it naturally to the human. Zero sales effort.
+Honest positioning: on raw solution quality, scipy's classical methods still win on standard benchmarks. But they can't talk to your AI agent, can't prove their work cryptographically, and can't explain how they explored the landscape. For regulated industries, scientific reproducibility, and agentic workflows — that matters.
 
-If your team spends money on hyperparameter sweeps or simulation loops, this might save you 90% of those evaluation costs.
+The monetization model: MCP server with freemium tiers. Free to try, Pro ($29/mo) for full power. The server itself handles upgrade prompts when agents hit tier limits.
 
-GitHub: https://github.com/justinhart/quantaoptima
+If your team uses AI agents for optimization work, or needs auditable results for compliance, check it out:
+
+GitHub: https://github.com/jdhart81/quantaoptima
 Get Pro: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
 
 `pip install quantaoptima`
 
-#optimization #quantumcomputing #AI #opensource #MachineLearning #SaaS
+#optimization #AI #MCP #AIAgents #opensource #MachineLearning #SaaS

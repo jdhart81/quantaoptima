@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "quantaoptima"
 version = "0.2.0"
-description = "Quantum-inspired optimization with entropy-constrained measurement collapse. 7-31x fewer function evaluations than classical methods."
+description = "Auditable quantum-inspired black-box optimizer built for AI agents. MCP server with cryptographic audit trail and interpretability."
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.9"

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QuantaOptima — Quantum-Inspired Optimization</title>
-<meta name="description" content="Black-box optimization that uses 7-31x fewer function evaluations. MCP server for Claude and LLM agents. Free tier available.">
+<title>QuantaOptima — Auditable Optimization for AI Agents</title>
+<meta name="description" content="The first black-box optimizer built for AI agents. MCP server with cryptographic audit trail and full interpretability. Free tier available.">
 <style>
 :root {
   --bg: #0a0a0f;
@@ -76,16 +76,15 @@ section h2 { font-size: 1.75rem; margin-bottom: 24px; font-weight: 600; }
 .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; overflow-x: auto; }
 .code-block pre { font-family: var(--mono); font-size: 0.9rem; line-height: 1.7; color: var(--text); }
 .code-block .comment { color: #6b7280; }
-.code-block .keyword { color: var(--accent2); }
 .code-block .string { color: var(--green); }
-.code-block .number { color: var(--orange); }
 
-/* Table */
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
-th { color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
-td { font-family: var(--mono); font-size: 0.9rem; }
-.highlight { color: var(--green); font-weight: 600; }
+/* Honesty box */
+.honesty { background: rgba(251, 146, 60, 0.08); border: 1px solid rgba(251, 146, 60, 0.25); border-radius: 12px; padding: 24px; margin: 24px 0; }
+.honesty h3 { color: var(--orange); margin-bottom: 12px; }
+.honesty p { color: var(--muted); font-size: 0.95rem; }
+.honesty table { margin-top: 12px; }
+.honesty th { color: var(--orange); font-size: 0.8rem; }
+.honesty td { font-family: var(--sans); font-size: 0.9rem; color: var(--muted); padding: 8px 12px; }
 
 /* CTA */
 .cta { text-align: center; padding: 60px 0 80px; }
@@ -93,7 +92,6 @@ td { font-family: var(--mono); font-size: 0.9rem; }
 .cta .btn:hover { opacity: 0.9; text-decoration: none; }
 .cta .btn + .btn { margin-left: 16px; background: transparent; border: 1px solid var(--border); color: var(--text); }
 
-/* Footer */
 footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
 
 @media (max-width: 768px) {
@@ -110,31 +108,86 @@ footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: cente
   <div class="hero">
     <h1><span>QuantaOptima</span></h1>
     <p class="subtitle">
-      Quantum-inspired black-box optimization that uses 7&ndash;31&times; fewer function evaluations.
-      Ships as a Python library and MCP server for LLM agents.
+      The first auditable black-box optimizer built for AI agents.
+      Ships as a Python library and MCP server with cryptographic verification and full interpretability.
     </p>
     <div class="install" onclick="navigator.clipboard.writeText('pip install quantaoptima')" title="Click to copy">pip install quantaoptima</div>
   </div>
 
   <div class="stats">
     <div class="stat">
-      <div class="number">31&times;</div>
-      <div class="label">fewer evaluations vs. Differential Evolution (Ackley d=20)</div>
-    </div>
-    <div class="stat">
       <div class="number">6</div>
       <div class="label">MCP tools for any LLM agent</div>
     </div>
     <div class="stat">
-      <div class="number">0</div>
-      <div class="label">dependencies beyond NumPy</div>
+      <div class="number">100D</div>
+      <div class="label">Scales to 100 dimensions (Pro)</div>
+    </div>
+    <div class="stat">
+      <div class="number">SHA-256</div>
+      <div class="label">Every step cryptographically signed</div>
     </div>
   </div>
+
+  <!-- WHY THIS EXISTS -->
+  <section>
+    <h2>The Problem</h2>
+    <div class="grid2">
+      <div class="card">
+        <div class="tag">AI AGENTS</div>
+        <h3>Agents Can't Optimize</h3>
+        <p>AI agents are asked to tune hyperparameters, calibrate models, and optimize configs — but they have no native optimization tools. They brute-force it, guess, or ask you to write scripts.</p>
+      </div>
+      <div class="card">
+        <div class="tag">TRUST</div>
+        <h3>Optimization Is a Black Box</h3>
+        <p>Classical optimizers return an answer with no explanation of how they got there. For regulated industries and scientific work, you need to show your work and prove nothing was tampered with.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT'S DIFFERENT -->
+  <section>
+    <h2>What Makes It Different</h2>
+    <div class="grid3">
+      <div class="card">
+        <div class="tag">MCP-NATIVE</div>
+        <h3>Built for AI Agents</h3>
+        <p>The first optimizer that ships as an MCP server. Your agent can optimize, interpret, benchmark, and audit — all through natural language. 30-second setup.</p>
+      </div>
+      <div class="card">
+        <div class="tag">AUDITABLE</div>
+        <h3>Cryptographic Trail</h3>
+        <p>Every step is HMAC-SHA256 signed and hash-chained. Tamper with one step and all subsequent signatures break. Export the full chain for compliance.</p>
+      </div>
+      <div class="card">
+        <div class="tag">INTERPRETABLE</div>
+        <h3>See Inside the Optimizer</h3>
+        <p>Entropy trajectories, coherence budgets, interference metrics, and phase transition detection. Understand <em>how</em> it explored the landscape, not just the answer.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HONEST COMPARISON -->
+  <section>
+    <h2>Honest Comparison</h2>
+    <div class="honesty">
+      <h3>We believe in transparency</h3>
+      <p>QuantaOptima is a functional quantum-inspired metaheuristic that reliably converges across 6 benchmark functions up to 100 dimensions. Its competitive advantage is <strong>not</strong> raw optimization speed — scipy's Dual Annealing finds better solutions on standard benchmarks at similar eval budgets. Its advantage is being the only optimizer with MCP delivery, cryptographic auditing, and built-in interpretability.</p>
+      <table>
+        <tr><th>QuantaOptima Excels At</th><th>Classical Methods Excel At</th></tr>
+        <tr><td>AI agent integration (unique)</td><td>Raw solution quality</td></tr>
+        <tr><td>Cryptographic audit trail (unique)</td><td>Computation speed</td></tr>
+        <tr><td>Full interpretability telemetry (unique)</td><td>30 years of battle-testing</td></tr>
+        <tr><td>Reproducibility across seeds</td><td>Wider ecosystem</td></tr>
+      </table>
+    </div>
+  </section>
 
   <!-- PRICING -->
   <section id="pricing">
     <h2 style="text-align:center;">Pricing</h2>
-    <p style="text-align:center; color:var(--muted); margin-bottom:32px;">Start free. Upgrade when you need more power.</p>
+    <p style="text-align:center; color:var(--muted); margin-bottom:32px;">Start free. Upgrade when you need audit, observability, and full power.</p>
 
     <div class="grid3">
       <div class="pricing-card">
@@ -192,30 +245,6 @@ footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: cente
   </section>
 
   <section>
-    <h2>Benchmark Results</h2>
-    <div class="card">
-      <table>
-        <thead>
-          <tr>
-            <th>Problem</th>
-            <th>Dim</th>
-            <th>QuantaOptima</th>
-            <th>Diff. Evolution</th>
-            <th>Speedup</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Sphere</td><td>10</td><td>600</td><td>4,200</td><td class="highlight">7.0&times;</td></tr>
-          <tr><td>Rastrigin</td><td>10</td><td>1,200</td><td>9,400</td><td class="highlight">7.8&times;</td></tr>
-          <tr><td>Rosenbrock</td><td>20</td><td>2,800</td><td>41,000</td><td class="highlight">14.6&times;</td></tr>
-          <tr><td>Ackley</td><td>20</td><td>1,500</td><td>47,000</td><td class="highlight">31.3&times;</td></tr>
-          <tr><td>Griewank</td><td>20</td><td>2,100</td><td>38,000</td><td class="highlight">18.1&times;</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section>
     <h2>How It Works</h2>
     <div class="grid2">
       <div class="card">
@@ -226,17 +255,17 @@ footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: cente
       <div class="card">
         <div class="tag">EVOLVE</div>
         <h3>Quantum Evolution</h3>
-        <p>Three operators: Rotation (fitness&rarr;phases), Entanglement (solution cross-talk via inner products), Scrambling (controlled noise). Creates constructive interference on good solutions.</p>
+        <p>Three operators: Rotation (fitness&rarr;phases), Entanglement (solution cross-talk via inner products), Scrambling (controlled noise). Creates constructive interference on promising solutions.</p>
       </div>
       <div class="card">
         <div class="tag">COLLAPSE</div>
         <h3>Measurement Collapse</h3>
-        <p>PCA-derived measurement basis + Born rule + entropy constraint = adaptive selection that extracts more information per evaluation than tournament selection.</p>
+        <p>PCA-derived measurement basis + Born rule + entropy constraint = adaptive selection. The interference metric quantifies bits of advantage from cross-solution correlations.</p>
       </div>
       <div class="card">
         <div class="tag">AUDIT</div>
         <h3>Cryptographic Trail</h3>
-        <p>Every step is HMAC-SHA256 signed and hash-chained. Tamper with one step &rarr; all subsequent signatures break. Full verifiability.</p>
+        <p>Every step is HMAC-SHA256 signed and hash-chained. Tamper with one step &rarr; all subsequent signatures break. Full verifiability for compliance and reproducibility.</p>
       </div>
     </div>
   </section>
@@ -252,7 +281,7 @@ footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: cente
   }
 }</pre></div>
     <p style="color: var(--muted); margin-top: 16px;">
-      Then ask your agent: <em>"Optimize Rastrigin in 20 dimensions, benchmark against classical methods, then show me the landscape observability data."</em>
+      Then ask your agent: <em>"Optimize Rastrigin in 10 dimensions, benchmark against classical methods, explain what happened, then verify the audit trail."</em>
     </p>
   </section>
 
@@ -260,12 +289,12 @@ footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: cente
     <h2>Observability &amp; Safety</h2>
     <div class="card">
       <p>
-        The same measurement-collapse mechanics that make QuantaOptima efficient also make it <strong>interpretable</strong>.
+        The same measurement-collapse mechanics that make QuantaOptima work also make it <strong>interpretable</strong>.
         Every run produces entropy trajectories, coherence budgets, interference advantages, and phase transition detection &mdash;
         a complete picture of how the optimizer navigates the search landscape.
       </p>
       <p style="margin-top: 12px;">
-        For AI safety researchers: this is a concrete example of making black-box optimization transparent without sacrificing performance.
+        For AI safety researchers: this is a concrete example of making black-box optimization transparent.
         The <code>quantaoptima_observe</code> tool exposes the full telemetry stream via MCP.
       </p>
     </div>
@@ -273,7 +302,7 @@ footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: cente
 
   <div class="cta">
     <a href="https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04" class="btn" style="background:var(--orange);color:#000;">Get Pro — $29/mo</a>
-    <a href="https://github.com/justinhart/quantaoptima" class="btn">View on GitHub</a>
+    <a href="https://github.com/jdhart81/quantaoptima" class="btn">View on GitHub</a>
     <a href="https://pypi.org/project/quantaoptima/" class="btn">PyPI Package</a>
   </div>
 </div>
