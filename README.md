@@ -1,8 +1,8 @@
 # QuantaOptima
 
-**The first auditable black-box optimizer built for AI agents.**
+**Auditable AI Actions — cryptographic audit trails for AI agent workflows.**
 
-QuantaOptima is a quantum-inspired optimization engine that ships as an MCP server — giving Claude, GPT, or any MCP-compatible agent the ability to optimize parameters, benchmark results, and cryptographically verify every decision. No other optimizer does this.
+QuantaOptima makes every AI agent action tamper-evident. It ships as an MCP server that any LLM agent can call, and as a Python library that any MCP server developer can embed. Every action is HMAC-SHA256 signed and hash-chained — tamper with one step and the entire chain breaks.
 
 ```
 pip install quantaoptima
@@ -10,60 +10,65 @@ pip install quantaoptima
 
 ## Why This Exists
 
-AI agents are increasingly asked to tune hyperparameters, calibrate simulations, and optimize configurations. But they have no native optimization tools. They either brute-force it, call out to scripts you have to write, or guess.
+AI agents are making decisions, writing code, calling APIs, transforming data, and optimizing configurations — but nobody can prove what they did or why. There's no audit trail, no tamper detection, no accountability.
 
-QuantaOptima gives agents a first-class optimization toolkit:
+QuantaOptima fixes this with a cryptographic hash chain that logs every action:
 
-- **`quantaoptima_optimize`** — Run optimization on 6 built-in benchmark functions (2–100 dimensions)
-- **`quantaoptima_explain`** — Get a human-readable explanation of what the optimizer did and why
-- **`quantaoptima_benchmark`** — Compare head-to-head against scipy's Differential Evolution and Dual Annealing
-- **`quantaoptima_observe`** — Inspect entropy trajectories, interference metrics, and phase transitions (interpretability)
-- **`quantaoptima_audit`** — Verify and export the HMAC-SHA256 cryptographic audit trail
-- **`quantaoptima_status`** — Check license tier and available features
+- **`quantaoptima_log_action`** — Log any action with before/after state to the audit chain
+- **`quantaoptima_verify_chain`** — Verify the HMAC-SHA256 chain integrity
+- **`quantaoptima_export_chain`** — Export the full audit trail as JSON
+- **`quantaoptima_chain_status`** — View chain statistics and health
+
+Plus a built-in quantum-inspired optimizer that demonstrates the audit chain in action:
+
+- **`quantaoptima_optimize`** — Run optimization with every step automatically audited
+- **`quantaoptima_explain`** — Human-readable explanation of what the optimizer did
+- **`quantaoptima_benchmark`** — Compare against scipy's classical methods [PRO]
+- **`quantaoptima_observe`** — Inspect entropy, interference, phase transitions [PRO]
+- **`quantaoptima_audit`** — Verify the optimizer's audit trail [PRO]
 
 ## What Makes It Different
 
-### 1. Built for AI Agents (MCP-Native)
-No other optimizer ships as an MCP server. Your agent can optimize, interpret results, and verify the audit trail — all through natural language. Setup takes 30 seconds.
+### 1. Every Action Is Tamper-Evident
 
-### 2. Every Step Is Auditable
-Every optimization step is HMAC-SHA256 signed and hash-chained. Tamper with one step and all subsequent signatures break. This matters for regulated industries (pharma, finance, aerospace) and scientific reproducibility.
+Every logged action produces an HMAC-SHA256 signature chained to the previous action. Tamper with one block and all subsequent signatures break. This matters for regulated industries (pharma, finance, aerospace), scientific reproducibility, and AI governance.
 
-### 3. Interpretable by Design
-The `observe` tool exposes the optimizer's internal state: entropy trajectories, coherence budgets, interference advantages, and phase transition detection. You can see *how* the optimizer explored the landscape, not just the final answer.
+### 2. Built for AI Agents (MCP-Native)
 
-### 4. Quantum-Inspired Algorithm
-The Measurement-Collapse Pruner encodes populations as quantum-like states, evolves them through rotation/entanglement/scrambling operators, and collapses to survivors via entropy-constrained measurement. The interference metric measures bits of information advantage from cross-solution correlations — a novel interpretability signal.
+Ships as an MCP server — your agent can log actions, verify the chain, and export the audit trail through natural language. No integration code needed. Setup takes 30 seconds.
 
-## Honest Performance Assessment
+### 3. Works as a Library Too
 
-QuantaOptima is a functional metaheuristic optimizer that reliably converges across all 6 benchmark functions up to 100 dimensions. It is **not** faster or more accurate than scipy's Dual Annealing on standard benchmarks at equivalent evaluation budgets.
+Other MCP server developers can embed QuantaOptima's audit chain in their own tools:
 
-| What QuantaOptima Does Well | Where Classical Methods Win |
-|---|---|
-| MCP delivery for AI agents (unique) | Raw solution quality (Dual Annealing) |
-| Cryptographic audit trail (unique) | Computation speed (Dual Annealing is 3-5x faster) |
-| Full interpretability telemetry (unique) | Mature, battle-tested over 30 years |
-| Reproducible across seeds | Wider ecosystem and documentation |
-| Scales to 100D | Better convergence on smooth problems |
+```python
+from quantaoptima import AuditChain, auditable
 
-**Use QuantaOptima when** you need an AI agent to optimize autonomously with auditable, interpretable results. **Use scipy when** you're writing a script and only care about the final answer.
+chain = AuditChain(scope="my-mcp-server")
 
-## Pricing
+# Log actions explicitly
+chain.log("query", {"question": "What's the revenue?"}, {"answer": "$4.2M", "source": "db"})
+chain.log("decision", {"options": ["A", "B"]}, {"chosen": "A", "reason": "lower risk"})
 
-| | Community (Free) | Pro ($29/mo) | Enterprise |
-|---|---|---|---|
-| Objectives | 3 (Sphere, Rastrigin, Rosenbrock) | All 6 | All + custom |
-| Max Dimensions | 10 | 100 | Unlimited |
-| Max Iterations | 100 | 5,000 | Unlimited |
-| MCP Tools | optimize, explain | All 6 tools | All + custom API |
-| Benchmark Comparison | — | ✓ | ✓ |
-| Observability / AI Safety | — | ✓ | ✓ |
-| Audit Export | — | ✓ | ✓ |
-| Support | Community | Email | Priority + SLA |
-| | [Install Free](https://pypi.org/project/quantaoptima/) | [Get Pro](https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04) | [Contact](mailto:hartjustin6@gmail.com) |
+# Or use the decorator to auto-audit any function
+@auditable(chain, action_type="calculation")
+def compute_risk(portfolio: dict) -> dict:
+    return {"risk_score": 0.42}
 
-Annual Pro: **$199/year** (save 43%)
+result = compute_risk({"stocks": ["AAPL", "GOOG"]})
+
+# Verify and export
+assert chain.verify()
+chain.export_json("audit_trail.json")
+```
+
+### 4. Built-In Optimizer Demo
+
+The quantum-inspired optimizer shows the audit chain at work. Every optimization step is cryptographically signed, producing a complete provenance record from start to finish. The optimizer features:
+
+- Quantum-inspired Measurement-Collapse Pruner algorithm
+- Built-in interpretability: entropy trajectories, interference metrics, phase transitions
+- Reliable convergence across 6 benchmark functions up to 100 dimensions
 
 ## Quick Start
 
@@ -86,90 +91,131 @@ Add to your Claude Desktop config (`claude_desktop_config.json`):
 }
 ```
 
-Then ask Claude: *"Optimize the Rastrigin function in 10 dimensions, then explain what the quantum operators did and show me the audit trail."*
+Then ask Claude:
 
-### Python API
+- *"Log a decision to the audit chain: I chose option A because it had lower risk."*
+- *"Verify the audit chain and show me the status."*
+- *"Optimize the Rastrigin function in 10 dimensions, then verify the audit trail."*
+- *"Export the full audit chain to audit_trail.json."*
+
+### Python Library (for MCP server developers)
 
 ```python
-from quantaoptima import QuantaOptimizer
+from quantaoptima import AuditChain
 
-optimizer = QuantaOptimizer(n_dimensions=10, population_size=50)
-result = optimizer.optimize(
-    objective_function=lambda x: -sum(x**2),  # minimize sum of squares
-    bounds=[(-5, 5)] * 10,
-    max_iterations=200,
+# Create a chain for your server
+chain = AuditChain(scope="my-server", actor="my-agent")
+
+# Log any action
+chain.log(
+    action_type="api_call",
+    state_before={"endpoint": "/users", "method": "GET"},
+    state_after={"status": 200, "count": 42},
+    metadata={"duration_ms": 150},
 )
 
-print(f"Best: {result.best_fitness:.6e} in {result.n_function_evals} evals")
-print(f"Audit verified: {result.audit_summary['verified']}")
+# Verify chain integrity
+print(chain.verify())        # True
+print(chain.summary())       # Stats and health
+print(chain.verify_detailed())  # Per-block verification
+
+# Export
+chain.export_json("trail.json")
 ```
 
-### License Key Setup (Pro/Enterprise)
+### Decorator Pattern
 
-```bash
-# Option 1: Environment variable
-export QUANTAOPTIMA_LICENSE="your-key-here"
+```python
+from quantaoptima import AuditChain, auditable
 
-# Option 2: License file
-mkdir -p ~/.quantaoptima
-echo "your-key-here" > ~/.quantaoptima/license.key
+chain = AuditChain(scope="data-pipeline")
+
+@auditable(chain, action_type="transform")
+def clean_data(raw: list) -> list:
+    return [x for x in raw if x is not None]
+
+@auditable(chain, action_type="analysis")
+def compute_stats(data: list) -> dict:
+    return {"mean": sum(data) / len(data), "count": len(data)}
+
+# Both calls are automatically logged to the audit chain
+clean = clean_data([1, None, 3, None, 5])
+stats = compute_stats(clean)
+
+assert chain.verify()
+print(f"Audit trail: {len(chain)} blocks, verified")
 ```
 
-## How It Works
+## Pricing
 
-QuantaOptima runs a loop of four steps:
+| | Community (Free) | Pro ($29/mo) | Enterprise |
+|---|---|---|---|
+| Audit Chain | Unlimited | Unlimited + analytics | Custom |
+| Log Actions | ✓ | ✓ | ✓ |
+| Verify Chain | ✓ | ✓ | ✓ |
+| Export Chain | ✓ | ✓ + formats | ✓ + custom |
+| Optimizer Objectives | 3 | All 6 | All + custom |
+| Max Dimensions | 10 | 100 | Unlimited |
+| Max Iterations | 100 | 5,000 | Unlimited |
+| Benchmark vs scipy | — | ✓ | ✓ |
+| Observability | — | ✓ | ✓ |
+| Support | Community | Email | Priority + SLA |
+| | [Install Free](https://pypi.org/project/quantaoptima/) | [Get Pro](https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04) | [Contact](mailto:hartjustin6@gmail.com) |
 
-1. **Encode** — Map population fitness to complex amplitudes via Boltzmann weighting: `αᵢ = √(βᵢ/Z) · exp(iφᵢ)`
-2. **Evolve** — Apply three quantum-inspired operators:
-   - **R(θ)**: Rotation encodes fitness into phases (like Grover's oracle)
-   - **E(λ)**: Entanglement creates interference between similar solutions
-   - **S(γ)**: Scrambling adds controlled exploration noise
+Annual Pro: **$199/year** (save 43%)
+
+## How the Audit Chain Works
+
+```
+Action 1                    Action 2                    Action 3
+┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
+│ action: "query"  │         │ action: "decide" │         │ action: "execute"│
+│ before: {...}    │         │ before: {...}    │         │ before: {...}    │
+│ after: {...}     │         │ after: {...}     │         │ after: {...}     │
+│ sig: HMAC(       │──chain──│ sig: HMAC(       │──chain──│ sig: HMAC(       │
+│   prev_sig +     │         │   prev_sig +     │         │   prev_sig +     │
+│   data           │         │   data           │         │   data           │
+│ )                │         │ )                │         │ )                │
+└─────────────────┘         └─────────────────┘         └─────────────────┘
+```
+
+Each block's signature depends on the previous block's signature. Change anything in block 1, and the signatures of blocks 2 and 3 become invalid. This is the same principle behind blockchain, applied to AI agent actions.
+
+## How the Optimizer Works
+
+The built-in quantum-inspired optimizer runs a loop of four steps:
+
+1. **Encode** — Map population fitness to complex amplitudes via Boltzmann weighting
+2. **Evolve** — Apply three quantum-inspired operators: Rotation R(θ), Entanglement E(λ), Scrambling S(γ)
 3. **Collapse** — PCA-derived measurement basis + Born rule probabilities + entropy constraint = adaptive selection
-4. **Audit** — Every step is HMAC-SHA256 signed and hash-chained for tamper detection
-
-## Observability & Interpretability
-
-Every optimization run produces a full telemetry stream:
-
-- **Entropy trajectory** — How the optimizer's "attention" narrows over time
-- **Coherence budget** — How much quantum information is available for exploitation
-- **Interference advantage** — Bits of selection power from cross-solution correlations
-- **Phase transitions** — Sharp entropy drops revealing qualitative landscape changes
-- **Cryptographic audit** — Tamper-evident record of every decision
-
-Call `quantaoptima_observe` via MCP to inspect the landscape of any run.
+4. **Audit** — Every step is HMAC-SHA256 signed and hash-chained
 
 ## Project Structure
 
 ```
 quantaoptima/
+├── audit.py           # Core: AuditChain, AuditBlock, @auditable decorator
 ├── core.py            # Quantum state encoder + evolution operators
 ├── mcp_algorithm.py   # Measurement-Collapse Pruner
 ├── optimizer.py       # Full optimizer orchestration
-├── audit.py           # Cryptographic audit trail
 ├── licensing.py       # Freemium license key system
-├── server.py          # MCP server (LLM integration)
-benchmarks/
-├── benchmark.py       # Comparative benchmarks
-├── rigorous_validation.py  # Statistical validation suite
-lean/
-├── quantaoptima_final.lean # Lean 4 / Mathlib formalization
+├── server.py          # MCP server (10 tools)
 ```
 
 ## Patent Status
 
 US Provisional Patent Application filed May 25, 2025. Covers:
+- Cryptographic audit trail for AI agent actions
 - Quantum-inspired optimization with measurement collapse
 - Entropy-constrained adaptive selection
 - Foundation model integration architecture
-- Cryptographic audit trail for verifiable optimization
 
 ## Citation
 
 ```bibtex
 @software{hart2025quantaoptima,
   author = {Hart, Justin},
-  title = {QuantaOptima: Auditable Quantum-Inspired Optimization for AI Agents},
+  title = {QuantaOptima: Auditable AI Actions},
   year = {2025},
   url = {https://github.com/jdhart81/quantaoptima}
 }
