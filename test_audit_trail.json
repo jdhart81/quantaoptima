@@ -1,0 +1,157 @@
+{
+  "scope": "quantaoptima-session",
+  "chain_length": 6,
+  "verified": true,
+  "exported_at": 1772673596.1341047,
+  "blocks": [
+    {
+      "block_number": 0,
+      "timestamp": 1772673596.1310387,
+      "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "scope": "quantaoptima-session",
+      "action_type": "query",
+      "actor": "ai-agent",
+      "state_before": {
+        "question": "What are the top 3 project management tools for startups?",
+        "source": "web_search"
+      },
+      "state_after": {
+        "results": [
+          "Linear",
+          "Notion",
+          "Asana"
+        ],
+        "sources_checked": 12
+      },
+      "metadata": {
+        "search_engine": "web",
+        "latency_ms": 2100
+      },
+      "signature": "e888a2ff3d450143b85e161ba98944a6bb2758437849f668d095266098369381"
+    },
+    {
+      "block_number": 1,
+      "timestamp": 1772673596.1310728,
+      "previous_hash": "e888a2ff3d450143b85e161ba98944a6bb2758437849f668d095266098369381",
+      "scope": "quantaoptima-session",
+      "action_type": "query",
+      "actor": "ai-agent",
+      "state_before": {
+        "question": "Extract requirements from uploaded RFP",
+        "file": "rfp_2026.pdf"
+      },
+      "state_after": {
+        "requirements": [
+          "real-time collaboration",
+          "Gantt charts",
+          "API access",
+          "SSO"
+        ],
+        "pages_read": 8
+      },
+      "metadata": {
+        "file_type": "pdf",
+        "file_size_kb": 340
+      },
+      "signature": "a6875afee1e07f0023991bb2d88df3cadb64b952e791adc9fdefbee59ffc5a8f"
+    },
+    {
+      "block_number": 2,
+      "timestamp": 1772673596.1310885,
+      "previous_hash": "a6875afee1e07f0023991bb2d88df3cadb64b952e791adc9fdefbee59ffc5a8f",
+      "scope": "quantaoptima-session",
+      "action_type": "calculation",
+      "actor": "ai-agent",
+      "state_before": {
+        "input": "Score 3 tools against 4 requirements",
+        "method": "weighted_matrix"
+      },
+      "state_after": {
+        "scores": {
+          "Linear": 8.5,
+          "Notion": 7.2,
+          "Asana": 8.1
+        },
+        "weights": {
+          "collaboration": 0.3,
+          "gantt": 0.25,
+          "api": 0.25,
+          "sso": 0.2
+        }
+      },
+      "metadata": {
+        "algorithm": "weighted_scoring_matrix"
+      },
+      "signature": "a0d0cf7c7ac56d7686dc76edd59f4a93a9ee6b1c5fee86a78ab7185356f6a08d"
+    },
+    {
+      "block_number": 3,
+      "timestamp": 1772673596.131105,
+      "previous_hash": "a0d0cf7c7ac56d7686dc76edd59f4a93a9ee6b1c5fee86a78ab7185356f6a08d",
+      "scope": "quantaoptima-session",
+      "action_type": "decision",
+      "actor": "ai-agent",
+      "state_before": {
+        "options": [
+          "Linear",
+          "Notion",
+          "Asana"
+        ],
+        "scores": {
+          "Linear": 8.5,
+          "Notion": 7.2,
+          "Asana": 8.1
+        }
+      },
+      "state_after": {
+        "chosen": "Linear",
+        "reason": "Highest score (8.5). Strongest on real-time collaboration and API access. SSO included in Pro plan."
+      },
+      "metadata": {
+        "confidence": 0.82,
+        "close_second": "Asana"
+      },
+      "signature": "894d1cd84ece41c67d8ed523dbcc5474da124eb40651610ffb745238173a0bf8"
+    },
+    {
+      "block_number": 4,
+      "timestamp": 1772673596.1311269,
+      "previous_hash": "894d1cd84ece41c67d8ed523dbcc5474da124eb40651610ffb745238173a0bf8",
+      "scope": "quantaoptima-session",
+      "action_type": "transform",
+      "actor": "ai-agent",
+      "state_before": {
+        "input": "Recommendation analysis",
+        "output_format": "email_draft"
+      },
+      "state_after": {
+        "output": "draft_email.md",
+        "word_count": 280,
+        "tone": "professional"
+      },
+      "metadata": {
+        "recipient": "cto@company.com",
+        "subject": "PM Tool Recommendation: Linear"
+      },
+      "signature": "4d906e09a86a0a8bd0ae437e75a008473bb7145159670107faea3661bc569eb2"
+    },
+    {
+      "block_number": 5,
+      "timestamp": 1772673596.13116,
+      "previous_hash": "4d906e09a86a0a8bd0ae437e75a008473bb7145159670107faea3661bc569eb2",
+      "scope": "quantaoptima-session",
+      "action_type": "approval",
+      "actor": "justin",
+      "state_before": {
+        "document": "draft_email.md",
+        "action": "send_email"
+      },
+      "state_after": {
+        "status": "approved",
+        "modifications": "Changed 'we recommend' to 'our analysis suggests'"
+      },
+      "metadata": {},
+      "signature": "542b6d10e9946439c3c1212aad1e3b4a793a955d182e0e8b9d0aedab038849c7"
+    }
+  ]
+}
