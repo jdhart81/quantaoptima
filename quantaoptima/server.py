@@ -311,20 +311,24 @@ def _register_tools(mcp):
 
 
     @mcp.tool(name="quantaoptima_export_chain")
-    async def export_chain(filepath: str = "") -> str:
+    async def export_chain(filepath: str = "", format: str = "json") -> str:
         """
-        Export the full audit chain as JSON.
+        Export the full audit chain as JSON or as an interactive HTML viewer.
 
         The exported file contains every block with its HMAC-SHA256 signature,
-        timestamps, before/after state, and chain linkage. This file can be
-        independently verified by anyone with the HMAC key.
+        timestamps, before/after state, and chain linkage.
 
-        Available on all tiers. Pro adds: export to multiple formats,
-        chain analytics, and compliance report generation.
+        JSON exports can be independently verified by anyone with the HMAC key.
+        HTML exports produce a self-contained interactive timeline that anyone
+        can open in a browser — perfect for sharing with stakeholders, compliance
+        officers, or collaborators.
+
+        Available on all tiers. Pro adds: advanced analytics and compliance reports.
 
         Args:
-            filepath: File path to save the JSON export. If empty, returns
-                     the chain data inline.
+            filepath: File path to save the export. If empty, returns data inline.
+                     For HTML format, use a .html extension (e.g., "audit_trail.html").
+            format: "json" (default) or "html" (interactive timeline viewer).
 
         Returns:
             JSON with the exported chain data or confirmation of file save.
@@ -339,13 +343,33 @@ def _register_tools(mcp):
 
         data = chain.export_dict()
 
+        if format == "html":
+            if not filepath:
+                filepath = "audit_chain_viewer.html"
+            if not filepath.endswith(".html"):
+                filepath += ".html"
+
+            from quantaoptima.viewer import render_chain_html
+            render_chain_html(chain, filepath)
+
+            return json.dumps({
+                "status": "exported",
+                "format": "html",
+                "filepath": filepath,
+                "blocks_exported": len(chain),
+                "chain_verified": data["verified"],
+                "hint": "Open the HTML file in any browser to view the interactive audit timeline.",
+            }, indent=2)
+
         if filepath:
             chain.export_json(filepath)
             return json.dumps({
                 "status": "exported",
+                "format": "json",
                 "filepath": filepath,
                 "blocks_exported": len(chain),
                 "chain_verified": data["verified"],
+                "hint": "You can also export as format='html' for an interactive timeline viewer.",
             }, indent=2)
         else:
             # Return inline (truncate if too large)
