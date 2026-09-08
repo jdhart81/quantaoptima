@@ -39,12 +39,15 @@ MCP config (claude_desktop_config.json):
 
 import json
 import math
+import os
+from pathlib import Path
 import time
 import numpy as np
 from typing import Optional, Dict, Any, List
 
 from quantaoptima.optimizer import QuantaOptimizer, OptimizationResult
 from quantaoptima.audit import AuditChain, CryptoAuditTrail
+from quantaoptima.storage import PersistentAuditChain
 from quantaoptima.licensing import (
     load_license, check_tool_access, check_limits,
     clear_license_cache, TIERS,
@@ -108,7 +111,10 @@ def _get_audit_chain() -> AuditChain:
     """Get or create the session's audit chain."""
     global _audit_chain
     if _audit_chain is None:
-        _audit_chain = AuditChain(scope="quantaoptima-session", actor="ai-agent")
+        directory = os.environ.get("QUANTAOPTIMA_AUDIT_DIR", str(Path.home() / ".quantaoptima" / "audit"))
+        _audit_chain = PersistentAuditChain(directory)
+    if isinstance(_audit_chain, PersistentAuditChain):
+        _audit_chain.refresh()
     return _audit_chain
 
 

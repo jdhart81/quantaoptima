@@ -1,33 +1,20 @@
-"""
-QuantaOptima Licensing — Zero-infrastructure freemium gating.
+"""Offline Ed25519 licenses. Only the issuer holds the private signing key.
 
-License keys are HMAC-SHA256 signed JSON tokens that validate locally.
-No license server, no database, no hosting costs. The key IS the proof.
-
-Tiers:
-  - community (free): Limited objectives, dims, iterations. No benchmark/observe.
-  - pro ($29/mo): Full power. All objectives, 100 dims, 5000 iters, all tools.
-  - enterprise (custom): Unlimited. Custom objectives API. White-label.
-
-Key format: base64(json({tier, email, expires, features})) + "." + hmac_signature
-
-INVARIANTS:
-  1. Free tier is genuinely useful (sphere/rastrigin/rosenbrock, 10 dims, 100 iters)
-  2. Pro features are gated by cryptographic signature — can't be spoofed
-  3. Keys are self-validating — zero infrastructure cost
-  4. Expired keys fall back to community tier (never brick the user)
-  5. License check adds <1ms overhead per tool call
+Version 2 licenses deliberately reject legacy shared-secret HMAC tokens.
+Clients configure a trusted public PEM file; no signing secret is distributed.
 """
 
 import base64
-import hashlib
-import hmac
+import math
 import json
 import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Dict, Any, Set
+
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
 
 
 # ============================================================
@@ -80,19 +67,33 @@ TIERS = {
 # License Key Crypto
 # ============================================================
 
-# This is the SIGNING key. In production, keep it secret.
-# The generate_license.py CLI uses this to mint keys.
-# The server uses it to VERIFY keys. Same key = HMAC.
-_SIGNING_KEY_ENV = "QUANTAOPTIMA_LICENSE_SECRET"
-_DEFAULT_SIGNING_KEY = b"quantaoptima-community-edition-2025"  # Only signs free keys
+_SIGNING_KEY_ENV = "QUANTAOPTIMA_LICENSE_PRIVATE_KEY_FILE"
+_PUBLIC_KEY_ENV = "QUANTAOPTIMA_LICENSE_PUBLIC_KEY_FILE"
 
 
-def _get_signing_key() -> bytes:
-    """Get the license signing key from environment or default."""
-    env_key = os.environ.get(_SIGNING_KEY_ENV)
-    if env_key:
-        return env_key.encode("utf-8")
-    return _DEFAULT_SIGNING_KEY
+def load_private_key(pem: Optional[bytes] = None) -> Ed25519PrivateKey:
+    if pem is None:
+        path = os.environ.get(_SIGNING_KEY_ENV)
+        if not path:
+            raise ValueError(f"Set {_SIGNING_KEY_ENV} to the issuer's private PEM file")
+        pem = Path(path).read_bytes()
+    key = serialization.load_pem_private_key(pem, password=None)
+    if not isinstance(key, Ed25519PrivateKey):
+        raise ValueError("License signing requires an Ed25519 private key")
+    return key
+
+
+def load_public_key(pem: Optional[bytes] = None) -> Ed25519PublicKey:
+    if pem is None:
+        path = os.environ.get(_PUBLIC_KEY_ENV)
+        source = Path(path) if path else Path(__file__).with_name("license_public_key.pem")
+        if not source.exists():
+            raise ValueError(f"No trusted issuer key; configure {_PUBLIC_KEY_ENV}")
+        pem = source.read_bytes()
+    key = serialization.load_pem_public_key(pem)
+    if not isinstance(key, Ed25519PublicKey):
+        raise ValueError("License verification requires an Ed25519 public key")
+    return key
 
 
 @dataclass
@@ -145,100 +146,68 @@ def generate_license_key(
     duration_days: int = 30,
     features: Optional[Dict[str, Any]] = None,
     signing_key: Optional[bytes] = None,
+    *,
+    expires_at: Optional[float] = None,
 ) -> str:
-    """
-    Generate a signed license key.
+    """Issue a v2 token using an Ed25519 private PEM (or configured file).
 
-    Args:
-        tier: "community", "pro", or "enterprise"
-        email: Licensee email
-        duration_days: Days until expiry. 0 = never expires.
-        features: Optional extra feature flags
-        signing_key: Override signing key (for generate_license.py CLI)
-
-    Returns:
-        License key string: base64(payload).hmac_signature
+    expires_at is used by billing to anchor access to a paid service period,
+    rather than to the time an event happens to be delivered.
     """
     if tier not in TIERS:
-        raise ValueError(f"Unknown tier: {tier}. Must be one of: {list(TIERS.keys())}")
-
-    expires = 0.0 if duration_days == 0 else time.time() + (duration_days * 86400)
-
-    payload = {
-        "tier": tier,
-        "email": email,
-        "expires": expires,
-        "features": features or {},
-        "issued": time.time(),
-        "version": 1,
-    }
-
-    payload_json = json.dumps(payload, sort_keys=True, separators=(",", ":"))
-    payload_b64 = base64.urlsafe_b64encode(payload_json.encode()).decode()
-
-    key = signing_key or _get_signing_key()
-    signature = hmac.new(key, payload_b64.encode(), hashlib.sha256).hexdigest()
-
-    return f"{payload_b64}.{signature}"
+        raise ValueError(f"Unknown tier: {tier}")
+    if not isinstance(duration_days, int) or duration_days < 0:
+        raise ValueError("duration_days must be a nonnegative integer")
+    if not isinstance(email, str) or not email.strip():
+        raise ValueError("License email is required")
+    expires = expires_at if expires_at is not None else (0 if duration_days == 0 else time.time() + duration_days * 86400)
+    if isinstance(expires, bool) or not isinstance(expires, (int, float)) or not math.isfinite(expires) or expires < 0:
+        raise ValueError("Invalid license expiry")
+    payload = {"tier": tier, "email": email, "expires": expires,
+               "features": features or {}, "issued": time.time(), "version": 2}
+    encoded = base64.urlsafe_b64encode(json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).decode()
+    message = f"qo2.{encoded}"
+    signature = load_private_key(signing_key).sign(message.encode())
+    return message + "." + base64.urlsafe_b64encode(signature).decode()
 
 
-def validate_license_key(key: str, signing_key: Optional[bytes] = None) -> License:
-    """
-    Validate a license key. Returns License with .valid = True/False.
-
-    Never throws — always returns a License (falls back to community on error).
-    """
+def validate_license_key(key: str, public_key: Optional[bytes] = None) -> License:
+    """Verify against the independently trusted public PEM. Fail to free access."""
     try:
-        if "." not in key:
-            return _community_license("Invalid key format")
-
-        payload_b64, signature = key.rsplit(".", 1)
-
-        # Verify HMAC
-        sk = signing_key or _get_signing_key()
-        expected = hmac.new(sk, payload_b64.encode(), hashlib.sha256).hexdigest()
-        if not hmac.compare_digest(signature, expected):
-            return _community_license("Invalid signature")
-
-        # Decode payload
-        payload_json = base64.urlsafe_b64decode(payload_b64).decode()
-        payload = json.loads(payload_json)
-
-        tier = payload.get("tier", "community")
-        email = payload.get("email", "unknown")
-        expires = payload.get("expires", 0)
-        features = payload.get("features", {})
-
-        if tier not in TIERS:
-            return _community_license(f"Unknown tier: {tier}")
-
-        license = License(
-            tier=tier,
-            email=email,
-            expires=expires,
-            features=features,
-            valid=True,
-            message=f"Valid {TIERS[tier]['label']} license for {email}",
+        prefix, encoded, signature = key.split(".")
+        if prefix != "qo2":
+            raise ValueError("Legacy licenses must be reissued")
+        load_public_key(public_key).verify(
+            base64.b64decode(signature, altchars=b"-_", validate=True),
+            f"{prefix}.{encoded}".encode(),
         )
+        payload = json.loads(base64.b64decode(encoded, altchars=b"-_", validate=True))
+        tier, email, expires = payload["tier"], payload["email"], payload["expires"]
+        if payload.get("version") != 2 or tier not in TIERS:
+            raise ValueError("Unsupported license")
+        if isinstance(expires, bool) or not isinstance(expires, (int, float)) or not math.isfinite(expires) or expires < 0:
+            raise ValueError("Invalid expiry")
+        if not isinstance(email, str) or not email or not isinstance(payload.get("features"), dict):
+            raise ValueError("Invalid license fields")
+        result = License(tier=tier, email=email, expires=expires,
+                         features=payload["features"], valid=True,
+                         message=f"Valid {TIERS[tier]['label']} license for {email}")
+        if result.is_expired:
+            return _community_license("License expired; using Community", valid=False)
+        return result
+    except Exception:
+        # Never leak key paths, token contents, or parser details to clients.
+        return _community_license("License invalid or issuer key unavailable; using Community. Legacy keys must be reissued.", valid=False)
 
-        if license.is_expired:
-            license.message = f"License expired. Falling back to Community tier."
-            license.valid = False
 
-        return license
-
-    except Exception as e:
-        return _community_license(f"Key validation error: {str(e)}")
-
-
-def _community_license(message: str = "No license key. Using Community (free) tier.") -> License:
+def _community_license(message: str = "No license key. Using Community (free) tier.", valid: bool = True) -> License:
     """Return a default community-tier license."""
     return License(
         tier="community",
         email="community@quantaoptima.dev",
         expires=0,
         features={},
-        valid=True,  # Community is always valid
+        valid=valid,
         message=message,
     )
 

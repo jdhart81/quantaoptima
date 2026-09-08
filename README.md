@@ -2,11 +2,25 @@
 
 **Auditable AI Actions — cryptographic audit trails for AI agent workflows.**
 
-QuantaOptima makes every AI agent action tamper-evident. It ships as an MCP server that any LLM agent can call, and as a Python library that any MCP server developer can embed. Every action is HMAC-SHA256 signed and hash-chained — tamper with one step and the entire chain breaks.
+QuantaOptima authenticates explicitly logged AI agent action records. It ships as an MCP server that any LLM agent can call, and as a Python library that any MCP server developer can embed. Every action is HMAC-SHA256 signed and hash-chained — tamper with one step and the entire chain breaks.
 
 ```
-pip install quantaoptima
+pip install https://github.com/jdhart81/quantaoptima/releases/download/v0.4.0/quantaoptima-0.4.0-py3-none-any.whl
 ```
+
+The package is distributed through GitHub Releases; it is not currently listed on PyPI.
+
+## Release status and migration
+
+Version **0.4.0 is an alpha release**. The MCP server now persists its audit chain
+under `~/.quantaoptima/audit` (override with `QUANTAOPTIMA_AUDIT_DIR`). Back up both
+the database and its private audit key. Imported JSON is unverified until checked
+with that key; HTML itself is not cryptographic evidence.
+
+Paid licenses now use Ed25519. Existing HMAC licenses must be reissued, and
+clients need the issuer's trusted public PEM. No production issuer key is bundled
+in this checkout. See [operations and migration](docs/OPERATIONS.md),
+[release notes](CHANGELOG.md), and [security limitations](SECURITY.md).
 
 ## Why This Exists
 
@@ -31,7 +45,7 @@ Plus a built-in quantum-inspired optimizer that demonstrates the audit chain in 
 
 ### 1. Every Action Is Tamper-Evident
 
-Every logged action produces an HMAC-SHA256 signature chained to the previous action. Tamper with one block and all subsequent signatures break. This matters for regulated industries (pharma, finance, aerospace), scientific reproducibility, and AI governance.
+Every logged action produces an HMAC-SHA256 signature chained to the previous action. Modifying signed contents makes chain verification fail. This authenticates recorded data; it does not prove actions occurred, authenticate actor names, or detect a deleted suffix without an independent checkpoint. See the [security model](SECURITY.md).
 
 ### 2. Built for AI Agents (MCP-Native)
 
@@ -68,14 +82,14 @@ The quantum-inspired optimizer shows the audit chain at work. Every optimization
 
 - Quantum-inspired Measurement-Collapse Pruner algorithm
 - Built-in interpretability: entropy trajectories, interference metrics, phase transitions
-- Reliable convergence across 6 benchmark functions up to 100 dimensions
+- Six built-in benchmark objectives; convergence quality depends on the problem and budget
 
 ## Quick Start
 
 ### MCP Server (for Claude, GPT, or any MCP-compatible agent)
 
 ```bash
-pip install quantaoptima
+pip install https://github.com/jdhart81/quantaoptima/releases/download/v0.4.0/quantaoptima-0.4.0-py3-none-any.whl
 quantaoptima-server
 ```
 
@@ -160,7 +174,7 @@ print(f"Audit trail: {len(chain)} blocks, verified")
 | Benchmark vs scipy | — | ✓ | ✓ |
 | Observability | — | ✓ | ✓ |
 | Support | Community | Email | Priority + SLA |
-| | [Install Free](https://pypi.org/project/quantaoptima/) | [Get Pro](https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04) | [Contact](mailto:hartjustin6@gmail.com) |
+| | [Install Free](https://github.com/jdhart81/quantaoptima/releases/tag/v0.4.0) | [Get Pro](https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04) | [Contact](mailto:hartjustin6@gmail.com) |
 
 Annual Pro: **$199/year** (save 43%)
 
@@ -179,7 +193,7 @@ Action 1                    Action 2                    Action 3
 └─────────────────┘         └─────────────────┘         └─────────────────┘
 ```
 
-Each block's signature depends on the previous block's signature. Change anything in block 1, and the signatures of blocks 2 and 3 become invalid. This is the same principle behind blockchain, applied to AI agent actions.
+Each block's signature depends on the previous block's signature. Verification checks each block’s content signature, block number, and link to its predecessor. A content change fails verification. A key holder can re-sign history; completeness requires an independently retained checkpoint.
 
 ## How the Optimizer Works
 
@@ -198,7 +212,8 @@ quantaoptima/
 ├── core.py            # Quantum state encoder + evolution operators
 ├── mcp_algorithm.py   # Measurement-Collapse Pruner
 ├── optimizer.py       # Full optimizer orchestration
-├── licensing.py       # Freemium license key system
+├── licensing.py       # Ed25519 license issuance and public-key verification
+├── storage.py         # Durable SQLite audit chain and separate HMAC key
 ├── server.py          # MCP server (10 tools)
 ```
 

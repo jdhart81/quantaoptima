@@ -34,6 +34,7 @@ def render_chain_html(
     chain_or_data: Any,
     output_path: str,
     title: str = "Audit Chain Viewer",
+    secret_key: bytes = None,
 ) -> str:
     """
     Render an audit chain as an interactive HTML file.
@@ -43,10 +44,13 @@ def render_chain_html(
                       or a path to a JSON export file.
         output_path: Where to save the HTML file.
         title: Page title.
+        secret_key: Optional private HMAC key to verify imported JSON. Never embedded in HTML.
 
     Returns:
         The output file path.
     """
+    from .audit import AuditChain
+    verified = None
     # Normalize input to a dict
     if isinstance(chain_or_data, (str, Path)):
         with open(chain_or_data) as f:
@@ -58,8 +62,15 @@ def render_chain_html(
 
     blocks = data.get("blocks", [])
     scope = data.get("scope", "unknown")
-    chain_length = data.get("chain_length", len(blocks))
-    verified = data.get("verified", False)
+    chain_length = len(blocks)
+    if isinstance(chain_or_data, AuditChain):
+        verified = chain_or_data.verify()
+    elif secret_key is not None:
+        try:
+            AuditChain.from_dict(data, secret_key)
+            verified = True
+        except (ValueError, TypeError, KeyError):
+            verified = False
     exported_at = data.get("exported_at", time.time())
 
     # Build action type stats
@@ -81,12 +92,12 @@ def render_chain_html(
     # Generate HTML for each block
     block_html_parts = []
     for b in blocks:
-        block_num = b.get("block_number", "?")
+        block_num = html_module.escape(str(b.get("block_number", "?")))
         action = html_module.escape(str(b.get("action_type", "unknown")))
         actor = html_module.escape(str(b.get("actor", "unknown")))
         ts = b.get("timestamp", 0)
-        sig = b.get("signature", "")[:16] + "..."
-        prev_hash = b.get("previous_hash", "")[:16] + "..."
+        sig = html_module.escape(str(b.get("signature", ""))[:16]) + "..."
+        prev_hash = html_module.escape(str(b.get("previous_hash", ""))[:16]) + "..."
 
         before_json = html_module.escape(json.dumps(b.get("state_before", {}), indent=2, default=str))
         after_json = html_module.escape(json.dumps(b.get("state_after", {}), indent=2, default=str))
@@ -151,8 +162,8 @@ def render_chain_html(
         for k, v in sorted(action_counts.items(), key=lambda x: -x[1])
     )
 
-    verified_class = "verified" if verified else "tampered"
-    verified_text = "VERIFIED ✓" if verified else "TAMPERED ✗"
+    verified_class = "verified" if verified is True else "tampered" if verified is False else ""
+    verified_text = "VERIFIED ✓" if verified is True else "INVALID ✗" if verified is False else "UNVERIFIED"
 
     full_html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -247,7 +258,7 @@ pre {{ background: var(--bg); border: 1px solid var(--border); border-radius: 6p
 <div class="summary">
   <div class="card {verified_class}">
     <div class="value">{verified_text}</div>
-    <div class="label">Chain Integrity</div>
+    <div class="label">Integrity at render time; HTML is not a verification proof</div>
   </div>
   <div class="card">
     <div class="value">{chain_length}</div>
@@ -342,9 +353,11 @@ def main():
     parser.add_argument("input", help="Path to audit chain JSON export")
     parser.add_argument("--output", "-o", default="audit_viewer.html", help="Output HTML file path")
     parser.add_argument("--title", "-t", default="Audit Chain Viewer", help="Page title")
+    parser.add_argument("--key-file", help="Private audit HMAC key file for verification; never embedded in output")
     args = parser.parse_args()
 
-    output = render_chain_html(args.input, args.output, args.title)
+    key = Path(args.key_file).read_bytes() if args.key_file else None
+    output = render_chain_html(args.input, args.output, args.title, secret_key=key)
     print(f"Viewer generated: {output}")
 
 

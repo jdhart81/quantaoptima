@@ -36,16 +36,18 @@ Inventor: Justin Hart
 """
 
 from quantaoptima.audit import AuditChain, AuditBlock, CryptoAuditTrail, auditable
+from quantaoptima.storage import PersistentAuditChain
 from quantaoptima.core import QuantumStateEncoder, QuantumEvolutionOperators
 from quantaoptima.mcp_algorithm import MeasurementCollapsePruner
 from quantaoptima.optimizer import QuantaOptimizer
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __author__ = "Justin Hart"
 
 __all__ = [
     # Core product: Audit Chain
     "AuditChain",
+    "PersistentAuditChain",
     "AuditBlock",
     "auditable",
     "CryptoAuditTrail",  # Legacy compat

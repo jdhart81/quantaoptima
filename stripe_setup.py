@@ -168,6 +168,7 @@ def main():
             url=args.webhook,
             enabled_events=[
                 "checkout.session.completed",
+                "invoice.paid",
                 "customer.subscription.deleted",
                 "customer.subscription.updated",
                 "invoice.payment_failed",

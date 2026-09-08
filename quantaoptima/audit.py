@@ -43,6 +43,9 @@ import hmac
 import json
 import time
 import functools
+import secrets
+import threading
+import copy
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional, Callable
 
@@ -74,6 +77,14 @@ class AuditBlock:
             "metadata": self.metadata,
             "signature": self.signature,
         }
+
+
+def _synchronized(func):
+    @functools.wraps(func)
+    def locked(self, *args, **kwargs):
+        with self._lock:
+            return func(self, *args, **kwargs)
+    return locked
 
 
 class AuditChain:
@@ -111,10 +122,9 @@ class AuditChain:
             actor: Default actor identity for logged actions.
         """
         if secret_key is None:
-            secret_key = hashlib.sha256(
-                str(time.time_ns()).encode() + scope.encode() + b"quantaoptima-audit"
-            ).digest()
+            secret_key = secrets.token_bytes(32)
         self.secret_key = secret_key
+        self._lock = threading.RLock()
         self.scope = scope
         self.default_actor = actor
         self.chain: List[AuditBlock] = []
@@ -130,10 +140,12 @@ class AuditChain:
         state_after: Dict[str, Any],
         metadata: Dict[str, Any],
         timestamp: float,
+        block_number: int,
     ) -> str:
         """Compute HMAC-SHA256 signature for a block."""
         message = json.dumps(
             {
+                "block_number": block_number,
                 "previous_hash": previous_hash,
                 "scope": scope,
                 "action_type": action_type,
@@ -151,6 +163,7 @@ class AuditChain:
             self.secret_key, message, hashlib.sha256
         ).hexdigest()
 
+    @_synchronized
     def log(
         self,
         action_type: str,
@@ -172,6 +185,9 @@ class AuditChain:
         Returns:
             The signed AuditBlock.
         """
+        state_before = _snapshot(state_before)
+        state_after = _snapshot(state_after)
+        metadata = _snapshot(metadata or {})
         block_number = len(self.chain)
         timestamp = time.time()
         previous_hash = (
@@ -182,7 +198,7 @@ class AuditChain:
 
         signature = self._compute_signature(
             previous_hash, self.scope, action_type, actor,
-            state_before, state_after, metadata, timestamp
+            state_before, state_after, metadata, timestamp, block_number
         )
 
         block = AuditBlock(
@@ -201,6 +217,7 @@ class AuditChain:
         self.chain.append(block)
         return block
 
+    @_synchronized
     def verify(self) -> bool:
         """
         Verify the entire audit chain.
@@ -217,19 +234,20 @@ class AuditChain:
             expected_prev = (
                 self.chain[i - 1].signature if i > 0 else self._genesis_hash
             )
-            if block.previous_hash != expected_prev:
+            if block.block_number != i or block.previous_hash != expected_prev:
                 return False
 
             expected_sig = self._compute_signature(
                 block.previous_hash, block.scope, block.action_type,
                 block.actor, block.state_before, block.state_after,
-                block.metadata, block.timestamp,
+                block.metadata, block.timestamp, block.block_number,
             )
-            if block.signature != expected_sig:
+            if not hmac.compare_digest(block.signature, expected_sig):
                 return False
 
         return True
 
+    @_synchronized
     def verify_detailed(self) -> Dict[str, Any]:
         """
         Verify chain and return detailed results per block.
@@ -244,14 +262,14 @@ class AuditChain:
             expected_prev = (
                 self.chain[i - 1].signature if i > 0 else self._genesis_hash
             )
-            prev_ok = block.previous_hash == expected_prev
+            prev_ok = block.block_number == i and block.previous_hash == expected_prev
 
             expected_sig = self._compute_signature(
                 block.previous_hash, block.scope, block.action_type,
                 block.actor, block.state_before, block.state_after,
-                block.metadata, block.timestamp,
+                block.metadata, block.timestamp, block.block_number,
             )
-            sig_ok = block.signature == expected_sig
+            sig_ok = hmac.compare_digest(block.signature, expected_sig)
             block_valid = prev_ok and sig_ok
 
             if not block_valid:
@@ -274,26 +292,36 @@ class AuditChain:
 
     def export_json(self, filepath: str) -> None:
         """Export the full audit chain as JSON."""
-        data = {
-            "scope": self.scope,
-            "chain_length": len(self.chain),
-            "verified": self.verify(),
-            "exported_at": time.time(),
-            "blocks": [block.to_dict() for block in self.chain],
-        }
+        data = self.export_dict()
         with open(filepath, "w") as f:
             json.dump(data, f, indent=2)
 
+    @_synchronized
     def export_dict(self) -> Dict[str, Any]:
         """Export the full audit chain as a dict (for programmatic use)."""
         return {
+            "schema_version": 2,
             "scope": self.scope,
             "chain_length": len(self.chain),
             "verified": self.verify(),
             "exported_at": time.time(),
-            "blocks": [block.to_dict() for block in self.chain],
+            "blocks": [copy.deepcopy(block.to_dict()) for block in self.chain],
         }
 
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any], secret_key: bytes) -> "AuditChain":
+        """Restore and authenticate a v2 export; never trust its verified field."""
+        if data.get("schema_version") != 2:
+            raise ValueError("Unsupported audit schema; legacy exports require their original verifier")
+        chain = cls(scope=data["scope"], secret_key=secret_key)
+        chain.chain = [AuditBlock(**copy.deepcopy(b)) for b in data["blocks"]]
+        if data.get("chain_length") != len(chain) or not chain.verify():
+            raise ValueError("Audit chain verification failed")
+        if any(b.scope != chain.scope for b in chain.chain):
+            raise ValueError("Audit scope mismatch")
+        return chain
+
+    @_synchronized
     def summary(self) -> Dict[str, Any]:
         """Get a summary of the audit trail."""
         if not self.chain:
@@ -447,8 +475,8 @@ def auditable(
                 )
                 raise
 
-        import asyncio
-        if asyncio.iscoroutinefunction(func):
+        import inspect
+        if inspect.iscoroutinefunction(func):
             return async_wrapper
         return wrapper
 
@@ -552,7 +580,7 @@ def _safe_serialize(obj: Any) -> Any:
     """Safely serialize any Python object for audit logging."""
     try:
         json.dumps(obj)
-        return obj
+        return _snapshot(obj)
     except (TypeError, ValueError):
         pass
 
@@ -572,3 +600,8 @@ def _safe_serialize(obj: Any) -> Any:
         except ImportError:
             pass
         return str(obj)
+
+
+def _snapshot(obj: Any) -> Any:
+    """Capture independent JSON data using the same normalization as signing."""
+    return json.loads(json.dumps(_serialize_for_hash(obj), allow_nan=False))

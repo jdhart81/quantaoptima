@@ -1,4 +1,7 @@
 #!/bin/bash
+echo "This legacy release script is retired. Follow docs/OPERATIONS.md for v0.4 builds and migration." >&2
+exit 1
+
 # ============================================================
 # QuantaOptima Launch Script
 # Run this from the project root on your local machine.

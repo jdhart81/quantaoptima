@@ -215,7 +215,8 @@ a:hover { text-decoration: underline; }
   <!-- Activation -->
   <div class="card">
     <h2>Activate Your License</h2>
-    <p>You'll receive your license key via email shortly. Once you have it:</p>
+    <p>Use your Stripe receipt to confirm payment. Activation requires a v0.4 license and the issuer’s trusted public key. Existing HMAC licenses must be reissued; contact support with your receipt if needed.</p>
+    <p>Follow the <a href="https://github.com/jdhart81/quantaoptima/blob/main/docs/OPERATIONS.md">v0.4 migration guide</a> and set <code>QUANTAOPTIMA_LICENSE_PUBLIC_KEY_FILE</code> to the trusted public PEM path before activating.</p>
 
     <h3>Option A: Environment Variable (recommended)</h3>
     <p>Add to your shell profile (<code>~/.zshrc</code> or <code>~/.bashrc</code>):</p>

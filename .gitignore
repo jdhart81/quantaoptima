@@ -24,3 +24,9 @@ MONETIZATION.md
 lean/
 *.pdf
 QuantaOptima_Project_Review.docx
+
+# Local issuer material and durable runtime state
+*.pem
+!quantaoptima/license_public_key.pem
+*.sqlite3*
+.venv/

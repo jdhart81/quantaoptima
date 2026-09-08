@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "quantaoptima"
-version = "0.3.0"
+version = "0.4.0"
 description = "Auditable AI Actions — cryptographic audit trails for AI agent workflows. HMAC-SHA256 hash chain, MCP server, built-in optimizer demo."
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     { name = "Justin Hart", email = "hartjustin6@gmail.com" },
 ]
@@ -31,7 +31,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -42,11 +41,13 @@ classifiers = [
 dependencies = [
     "numpy>=1.21",
     "scipy>=1.9",
-    "mcp[cli]>=1.0",
+    "mcp[cli]>=1.0,<2",
     "pydantic>=2.0",
+    "cryptography>=46",
 ]
 
 [project.optional-dependencies]
+webhook = ["stripe>=15.4,<16"]
 dev = [
     "pytest>=7.0",
     "pytest-asyncio>=0.21",

@@ -1,5 +1,10 @@
 # QuantaOptima-IQ Benchmark Report
 
+> Historical exploratory report, not release validation. The runners did not
+> enforce equal function-evaluation budgets or matched target accuracy. The
+> scaling and efficiency claims below must not be used as established advantages
+> until the benchmark design is corrected and results are rerun.
+
 **Date**: 2026-03-01
 **Author**: Justin Hart / Claude (QuantaOptima-IQ team)
 **Version**: 0.1-alpha

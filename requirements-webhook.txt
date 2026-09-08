@@ -1,2 +1,1 @@
-stripe>=9.0
-numpy>=1.21
+.[webhook]
