@@ -2,7 +2,7 @@
 
 **Auditable AI Actions — cryptographic audit trails for AI agent workflows.**
 
-QuantaOptima authenticates explicitly logged AI agent action records. It ships as an MCP server that any LLM agent can call, and as a Python library that any MCP server developer can embed. Every action is HMAC-SHA256 signed and hash-chained — tamper with one step and the entire chain breaks.
+QuantaOptima authenticates explicitly logged AI agent action records. It ships as an MCP server that any LLM agent can call, and as a Python library that any MCP server developer can embed. Explicitly recorded actions are authenticated with HMAC-SHA256 and linked in a hash chain. Verification detects changes to authenticated record contents; it does not establish that an action occurred or that all actions were recorded.
 
 ```
 pip install https://github.com/jdhart81/quantaoptima/releases/download/v0.4.0/quantaoptima-0.4.0-py3-none-any.whl
@@ -24,9 +24,11 @@ in this checkout. See [operations and migration](docs/OPERATIONS.md),
 
 ## Why This Exists
 
-AI agents are making decisions, writing code, calling APIs, transforming data, and optimizing configurations — but nobody can prove what they did or why. There's no audit trail, no tamper detection, no accountability.
+Agent tracing tools help developers inspect workflow activity. QuantaOptima provides a local integrity layer for explicitly recorded actions: authenticate records, check the stored chain, and export it for inspection.
 
-QuantaOptima fixes this with a cryptographic hash chain that logs every action:
+A valid chain authenticates recorded contents under its key; it does not prove actor identity, real-world execution, or completeness. Detecting a removed suffix requires an independent checkpoint. See the [security model](SECURITY.md).
+
+The MCP server exposes these operations:
 
 - **`quantaoptima_log_action`** — Log any action with before/after state to the audit chain
 - **`quantaoptima_verify_chain`** — Verify the HMAC-SHA256 chain integrity
@@ -49,7 +51,7 @@ Every logged action produces an HMAC-SHA256 signature chained to the previous ac
 
 ### 2. Built for AI Agents (MCP-Native)
 
-Ships as an MCP server — your agent can log actions, verify the chain, and export the audit trail through natural language. No integration code needed. Setup takes 30 seconds.
+Ships as an MCP server. After installing the package and configuring a compatible client, an agent can explicitly log actions, verify the chain, and export records. Other agent actions are not automatically captured merely because this server is connected.
 
 ### 3. Works as a Library Too
 
