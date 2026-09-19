@@ -41,7 +41,7 @@ from quantaoptima.core import QuantumStateEncoder, QuantumEvolutionOperators
 from quantaoptima.mcp_algorithm import MeasurementCollapsePruner
 from quantaoptima.optimizer import QuantaOptimizer
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 __author__ = "Justin Hart"
 
 __all__ = [

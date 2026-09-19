@@ -39,6 +39,10 @@ from dataclasses import dataclass, asdict
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from quantaoptima.optimizer import QuantaOptimizer, OptimizationResult
+from quantaoptima.benchmarking import (
+    BudgetExhausted, EvaluationBudget, differential_evolution_plan,
+    quanta_iterations_for_budget,
+)
 
 
 # ============================================================
@@ -129,59 +133,50 @@ TEST_FUNCTIONS = {
 def run_differential_evolution(
     func: Callable, bounds: List[Tuple[float, float]], max_evals: int, seed: int
 ) -> Dict[str, Any]:
-    """scipy.optimize.differential_evolution baseline."""
+    """scipy differential evolution with a hard function-evaluation ceiling."""
     from scipy.optimize import differential_evolution
-
-    eval_count = [0]
-    best_history = []
-
-    def tracked_func(x):
-        val = -func(x)  # scipy minimizes, our func returns negated
-        eval_count[0] += 1
-        best_history.append(-val)
-        return val
-
+    budget = EvaluationBudget(func, max_evals)
+    multiplier, iterations = differential_evolution_plan(max_evals, len(bounds))
     t0 = time.time()
-    result = differential_evolution(
-        tracked_func, bounds, maxiter=max_evals // 15,
-        seed=seed, tol=1e-12, atol=1e-12,
-        polish=False,
-    )
+    try:
+        result = differential_evolution(
+            budget.minimize, bounds, maxiter=iterations, popsize=multiplier,
+            seed=seed, tol=1e-12, atol=1e-12, polish=False,
+        )
+        converged = bool(result.success)
+    except BudgetExhausted:
+        converged = False
     elapsed = time.time() - t0
-
     return {
         "method": "differential_evolution",
-        "best_fitness": -result.fun,
-        "n_evals": eval_count[0],
+        "best_fitness": budget.best_fitness,
+        "n_evals": budget.count,
         "time_seconds": elapsed,
-        "converged": result.success,
+        "converged": converged,
     }
 
 def run_dual_annealing(
     func: Callable, bounds: List[Tuple[float, float]], max_evals: int, seed: int
 ) -> Dict[str, Any]:
-    """scipy.optimize.dual_annealing baseline."""
+    """scipy dual annealing with a hard function-evaluation ceiling."""
     from scipy.optimize import dual_annealing
-
-    eval_count = [0]
-
-    def tracked_func(x):
-        eval_count[0] += 1
-        return -func(x)
-
+    budget = EvaluationBudget(func, max_evals)
     t0 = time.time()
-    result = dual_annealing(
-        tracked_func, bounds, maxiter=max(100, max_evals // 20),
-        seed=seed,
-    )
+    try:
+        result = dual_annealing(
+            budget.minimize, bounds, maxiter=max_evals, maxfun=max_evals,
+            no_local_search=True, seed=seed,
+        )
+        converged = bool(result.success)
+    except BudgetExhausted:
+        converged = False
     elapsed = time.time() - t0
-
     return {
         "method": "dual_annealing",
-        "best_fitness": -result.fun,
-        "n_evals": eval_count[0],
+        "best_fitness": budget.best_fitness,
+        "n_evals": budget.count,
         "time_seconds": elapsed,
-        "converged": result.success,
+        "converged": converged,
     }
 
 def run_random_search(
@@ -219,7 +214,7 @@ def run_quantaoptima(
     """Run QuantaOptima optimizer."""
     d = len(bounds)
     pop_size = min(80, max(30, d * 3))
-    max_iter = max_evals // pop_size
+    max_iter = quanta_iterations_for_budget(max_evals, pop_size)
 
     optimizer = QuantaOptimizer(
         n_dimensions=d,

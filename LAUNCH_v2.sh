@@ -124,9 +124,9 @@ gh release create v0.2.0 dist/* \
 ### New MCP Tool
 - \`quantaoptima_status\` — check license tier and available features
 
-### Get Pro
-- Monthly: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
-- Annual: https://buy.stripe.com/4gM14nbS6exycka5acfYY05
+### Historical Pro preview (sales disabled)
+- Monthly: https://github.com/jdhart81/quantaoptima#release-status-and-migration
+- Annual: https://github.com/jdhart81/quantaoptima#release-status-and-migration
 "
 echo "  ✓ Release v0.2.0 created"
 
@@ -168,8 +168,8 @@ echo "YOUR LIVE LINKS:"
 echo "  GitHub:   https://github.com/$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo 'justinhart/quantaoptima')"
 echo "  PyPI:     https://pypi.org/project/quantaoptima/"
 echo "  Pages:    https://justinhart.github.io/quantaoptima/"
-echo "  Stripe Monthly: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04"
-echo "  Stripe Annual:  https://buy.stripe.com/4gM14nbS6exycka5acfYY05"
+echo "  Stripe Monthly: https://github.com/jdhart81/quantaoptima#release-status-and-migration"
+echo "  Stripe Annual:  https://github.com/jdhart81/quantaoptima#release-status-and-migration"
 echo ""
 echo "NEXT: Post your launch content → see LAUNCH_POSTS.md"
 echo ""

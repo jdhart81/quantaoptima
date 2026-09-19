@@ -92,9 +92,9 @@ gh release create v0.2.0 dist/* \
 pip install quantaoptima
 \`\`\`
 
-### Get Pro
-- Monthly: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
-- Annual: https://buy.stripe.com/4gM14nbS6exycka5acfYY05
+### Historical Pro preview (sales disabled)
+- Monthly: https://github.com/jdhart81/quantaoptima#release-status-and-migration
+- Annual: https://github.com/jdhart81/quantaoptima#release-status-and-migration
 " 2>/dev/null || echo "  Release may already exist"
 echo "  ✓ Release created"
 
@@ -109,7 +109,7 @@ echo ""
 echo "YOUR LIVE LINKS:"
 echo "  GitHub:  https://github.com/${REPO_NAME}"
 echo "  Pages:   https://$(echo $REPO_NAME | cut -d'/' -f1).github.io/quantaoptima/"
-echo "  Stripe:  https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04"
+echo "  Stripe:  https://github.com/jdhart81/quantaoptima#release-status-and-migration"
 echo ""
 echo "OPTIONAL NEXT STEPS:"
 echo "  1. PyPI upload:  twine upload dist/*"

@@ -35,6 +35,8 @@ def render_chain_html(
     output_path: str,
     title: str = "Audit Chain Viewer",
     secret_key: bytes = None,
+    *,
+    overwrite: bool = True,
 ) -> str:
     """
     Render an audit chain as an interactive HTML file.
@@ -314,7 +316,8 @@ function filterBlocks(query) {{
 </body>
 </html>"""
 
-    with open(output_path, "w") as f:
+    mode = "w" if overwrite else "x"
+    with open(output_path, mode, encoding="utf-8") as f:
         f.write(full_html)
 
     return output_path

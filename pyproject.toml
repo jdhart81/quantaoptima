@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "quantaoptima"
-version = "0.4.0"
+version = "0.4.1"
 description = "Auditable AI Actions — cryptographic audit trails for AI agent workflows. HMAC-SHA256 hash chain, MCP server, built-in optimizer demo."
 readme = "README.md"
 license = "Apache-2.0"

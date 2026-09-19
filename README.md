@@ -12,7 +12,8 @@ The package is distributed through GitHub Releases; it is not currently listed o
 
 ## Release status and migration
 
-Version **0.4.0 is an alpha release**. The MCP server now persists its audit chain
+Version **0.4.1 is an unreleased hardening candidate**; v0.4.0 remains the latest
+published alpha. The MCP server persists its audit chain
 under `~/.quantaoptima/audit` (override with `QUANTAOPTIMA_AUDIT_DIR`). Back up both
 the database and its private audit key. Imported JSON is unverified until checked
 with that key; HTML itself is not cryptographic evidence.
@@ -21,6 +22,10 @@ Paid licenses now use Ed25519. Existing HMAC licenses must be reissued, and
 clients need the issuer's trusted public PEM. No production issuer key is bundled
 in this checkout. See [operations and migration](docs/OPERATIONS.md),
 [release notes](CHANGELOG.md), and [security limitations](SECURITY.md).
+
+**Paid sales are disabled.** The Pro and Enterprise tiers are previews until a
+production issuer public key, signed test-mode fulfillment, renewal delivery,
+durable storage, and customer activation have all been verified end to end.
 
 ## Why This Exists
 
@@ -80,7 +85,9 @@ chain.export_json("audit_trail.json")
 
 ### 4. Built-In Optimizer Demo
 
-The quantum-inspired optimizer shows the audit chain at work. Every optimization step is cryptographically signed, producing a complete provenance record from start to finish. The optimizer features:
+The quantum-inspired optimizer shows the audit chain at work. Every optimization
+step is explicitly recorded and cryptographically signed. This authenticates the
+recorded trace; it does not prove execution, completeness, or optimality.
 
 - Quantum-inspired Measurement-Collapse Pruner algorithm
 - Built-in interpretability: entropy trajectories, interference metrics, phase transitions
@@ -164,21 +171,21 @@ print(f"Audit trail: {len(chain)} blocks, verified")
 
 ## Pricing
 
-| | Community (Free) | Pro ($29/mo) | Enterprise |
+| | Community (Free) | Pro preview | Enterprise preview |
 |---|---|---|---|
 | Audit Chain | Unlimited | Unlimited + analytics | Custom |
 | Log Actions | ✓ | ✓ | ✓ |
 | Verify Chain | ✓ | ✓ | ✓ |
-| Export Chain | ✓ | ✓ + formats | ✓ + custom |
+| Export Chain | ✓ | ✓ | ✓ |
 | Optimizer Objectives | 3 | All 6 | All + custom |
 | Max Dimensions | 10 | 100 | Unlimited |
 | Max Iterations | 100 | 5,000 | Unlimited |
 | Benchmark vs scipy | — | ✓ | ✓ |
 | Observability | — | ✓ | ✓ |
 | Support | Community | Email | Priority + SLA |
-| | [Install Free](https://github.com/jdhart81/quantaoptima/releases/tag/v0.4.0) | [Get Pro](https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04) | [Contact](mailto:hartjustin6@gmail.com) |
+| Availability | [Install Free](https://github.com/jdhart81/quantaoptima/releases/tag/v0.4.0) | Not for sale | Not for sale |
 
-Annual Pro: **$199/year** (save 43%)
+Preview pricing is historical and not an active purchase offer.
 
 ## How the Audit Chain Works
 

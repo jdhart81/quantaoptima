@@ -1,7 +1,11 @@
-# QuantaOptima 0.4 operations and migration
+# QuantaOptima 0.4.1 operations and migration
 
 This is an alpha release with changes to license and audit formats. Do not reuse
 0.3 signing secrets or treat old exported `verified` flags as evidence.
+
+Public paid sales are disabled in the 0.4.1 candidate. Do not restore checkout
+links until test-mode initial purchase, renewal, email delivery, trusted public
+key distribution, activation, durable backup, and failure recovery have receipts.
 
 ## Install and test
 
@@ -92,6 +96,11 @@ reader can call `refresh()` to see other writers' entries. In-memory `AuditChain
 remains available for explicitly ephemeral workflows. Optimizer demo step traces
 remain in memory; export them before closing the process. The durable MCP chain
 records optimizer start/completion, not the full step trace.
+
+Agent-requested exports are confined to `~/.quantaoptima/exports` by default
+(override with `QUANTAOPTIMA_EXPORT_DIR`). MCP tools accept filenames only and
+refuse to replace existing exports. Library calls retain explicit path and
+overwrite behavior for backward compatibility.
 
 Schema v2 signs block numbers and captures independent JSON snapshots. Old
 schema-v1 exports must be retained with their original verifier and key; they

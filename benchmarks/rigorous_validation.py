@@ -33,6 +33,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from quantaoptima.optimizer import QuantaOptimizer, OptimizationResult
 from quantaoptima.audit import CryptoAuditTrail
+from quantaoptima.benchmarking import (
+    BudgetExhausted, EvaluationBudget, differential_evolution_plan,
+    quanta_iterations_for_budget,
+)
 
 
 # ============================================================
@@ -102,7 +106,7 @@ TEST_FUNCTIONS = {
 def run_qo(func, bounds, eval_budget, seed, d):
     """Run QuantaOptima with fixed eval budget."""
     pop_size = min(80, max(30, d * 3))
-    max_iter = max(20, eval_budget // pop_size)
+    max_iter = quanta_iterations_for_budget(eval_budget, pop_size)
 
     optimizer = QuantaOptimizer(
         n_dimensions=d,
@@ -144,49 +148,49 @@ def run_qo(func, bounds, eval_budget, seed, d):
 def run_de(func, bounds, eval_budget, seed, d):
     """Run scipy differential_evolution with same eval budget."""
     from scipy.optimize import differential_evolution
-    eval_count = [0]
-
-    def tracked(x):
-        eval_count[0] += 1
-        return -func(x)
-
+    budget = EvaluationBudget(func, eval_budget)
+    multiplier, iterations = differential_evolution_plan(eval_budget, d)
     t0 = time.time()
-    result = differential_evolution(
-        tracked, bounds, maxiter=max(50, eval_budget // 15),
-        seed=seed, tol=1e-12, atol=1e-12, polish=False,
-    )
+    try:
+        result = differential_evolution(
+            budget.minimize, bounds, maxiter=iterations, popsize=multiplier,
+            seed=seed, tol=1e-12, atol=1e-12, polish=False,
+        )
+        converged = bool(result.success)
+    except BudgetExhausted:
+        converged = False
     elapsed = time.time() - t0
 
     return {
         "method": "differential_evolution",
-        "best_fitness": float(-result.fun),
-        "n_evals": eval_count[0],
+        "best_fitness": budget.best_fitness,
+        "n_evals": budget.count,
         "time": elapsed,
-        "converged": bool(result.success),
+        "converged": converged,
     }
 
 
 def run_da(func, bounds, eval_budget, seed, d):
     """Run scipy dual_annealing with same eval budget."""
     from scipy.optimize import dual_annealing
-    eval_count = [0]
-
-    def tracked(x):
-        eval_count[0] += 1
-        return -func(x)
-
+    budget = EvaluationBudget(func, eval_budget)
     t0 = time.time()
-    result = dual_annealing(
-        tracked, bounds, maxiter=max(100, eval_budget // 20), seed=seed,
-    )
+    try:
+        result = dual_annealing(
+            budget.minimize, bounds, maxiter=eval_budget, maxfun=eval_budget,
+            no_local_search=True, seed=seed,
+        )
+        converged = bool(result.success)
+    except BudgetExhausted:
+        converged = False
     elapsed = time.time() - t0
 
     return {
         "method": "dual_annealing",
-        "best_fitness": float(-result.fun),
-        "n_evals": eval_count[0],
+        "best_fitness": budget.best_fitness,
+        "n_evals": budget.count,
         "time": elapsed,
-        "converged": bool(result.success),
+        "converged": converged,
     }
 
 

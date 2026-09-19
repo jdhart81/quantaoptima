@@ -29,7 +29,7 @@ TIERS = {
         "objectives": {"sphere", "rastrigin", "rosenbrock"},
         "tools": {"quantaoptima_optimize", "quantaoptima_explain"},
         "custom_objectives": False,
-        "audit_export": False,
+        "audit_export": True,
         "label": "Community (Free)",
     },
     "pro": {
@@ -44,7 +44,7 @@ TIERS = {
         },
         "custom_objectives": False,
         "audit_export": True,
-        "label": "Pro ($29/month)",
+        "label": "Pro preview (not for sale)",
     },
     "enterprise": {
         "max_dimensions": 10000,
@@ -56,9 +56,10 @@ TIERS = {
             "quantaoptima_observe", "quantaoptima_explain",
             "quantaoptima_audit",
         },
-        "custom_objectives": True,
+        # The MCP surface deliberately accepts only reviewed built-ins.
+        "custom_objectives": False,
         "audit_export": True,
-        "label": "Enterprise (Custom)",
+        "label": "Enterprise preview (not for sale)",
     },
 }
 
@@ -69,6 +70,7 @@ TIERS = {
 
 _SIGNING_KEY_ENV = "QUANTAOPTIMA_LICENSE_PRIVATE_KEY_FILE"
 _PUBLIC_KEY_ENV = "QUANTAOPTIMA_LICENSE_PUBLIC_KEY_FILE"
+UPGRADE_INFO_URL = "https://github.com/jdhart81/quantaoptima#release-status-and-migration"
 
 
 def load_private_key(pem: Optional[bytes] = None) -> Ed25519PrivateKey:
@@ -291,7 +293,8 @@ def check_tool_access(tool_name: str) -> Optional[str]:
             f"The '{tool_name}' tool requires a Pro license. "
             f"You're on the {tier} tier."
         ),
-        "upgrade_url": "https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04",
+        "upgrade_url": UPGRADE_INFO_URL,
+        "sales_status": "not_for_sale",
         "hint": (
             "Set QUANTAOPTIMA_LICENSE env var or save your key to "
             "~/.quantaoptima/license.key"
@@ -342,6 +345,7 @@ def check_limits(
         "error": "limit_exceeded",
         "current_tier": limits["label"],
         "violations": violations,
-        "upgrade_url": "https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04",
-        "hint": "Upgrade to Pro for higher limits and all objectives.",
+        "upgrade_url": UPGRADE_INFO_URL,
+        "sales_status": "not_for_sale",
+        "hint": "Pro preview access is issuer-provisioned; public sales are disabled.",
     }, indent=2)

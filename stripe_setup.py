@@ -2,6 +2,10 @@
 """
 QuantaOptima Stripe Setup — Creates products, prices, and checkout links.
 
+Paid sales are currently disabled. Mutating live Stripe state requires the
+explicit ``--allow-live`` flag so this archived operator utility cannot create
+billable checkout paths by accident.
+
 Run this ONCE to set up your Stripe catalog. It creates:
   - Product: "QuantaOptima Pro"
   - Price: $29/month (recurring)
@@ -13,8 +17,8 @@ Prerequisites:
   export STRIPE_SECRET_KEY="sk_live_..."   # or sk_test_ for testing
 
 Usage:
-  python stripe_setup.py              # Create products + payment links
-  python stripe_setup.py --test       # Use test mode
+  python stripe_setup.py --test       # Create test products + payment links
+  python stripe_setup.py --allow-live # Explicitly authorize live mutations
   python stripe_setup.py --webhook    # Also create webhook endpoint
 
 Output:
@@ -38,6 +42,11 @@ except ImportError:
 def main():
     parser = argparse.ArgumentParser(description="Set up QuantaOptima Stripe products")
     parser.add_argument("--test", action="store_true", help="Use Stripe test mode key")
+    parser.add_argument(
+        "--allow-live",
+        action="store_true",
+        help="explicitly authorize creating or changing live Stripe objects",
+    )
     parser.add_argument("--webhook", type=str, metavar="URL",
                         help="Create webhook endpoint at this URL")
     parser.add_argument("--list", action="store_true",
@@ -54,8 +63,21 @@ def main():
         print("  Live mode: export STRIPE_SECRET_KEY=\"sk_live_...\"")
         sys.exit(1)
 
+    is_test_key = key.startswith("sk_test_")
+    is_live_key = key.startswith("sk_live_")
+    if not (is_test_key or is_live_key):
+        print("ERROR: STRIPE_SECRET_KEY is not a recognized Stripe secret key.")
+        sys.exit(2)
+    if args.test and not is_test_key:
+        print("ERROR: --test requires an sk_test_ Stripe key.")
+        sys.exit(2)
+    if not args.list and is_live_key and not args.allow_live:
+        print("ERROR: Paid sales are disabled; live Stripe mutation is blocked.")
+        print("Use --allow-live only after fulfillment and release gates are cleared.")
+        sys.exit(2)
+
     stripe.api_key = key
-    mode = "TEST" if "test" in key else "LIVE"
+    mode = "TEST" if is_test_key else "LIVE"
     print(f"Using Stripe in {mode} mode")
     print("=" * 60)
 

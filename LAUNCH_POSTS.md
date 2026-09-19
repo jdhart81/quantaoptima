@@ -1,4 +1,7 @@
-# QuantaOptima v0.2.0 Launch Posts
+# QuantaOptima v0.2.0 Launch Posts — Archived, Do Not Publish
+
+These drafts predate v0.4.1 and contain historical paid and benchmark claims.
+Public sales are disabled; nothing in this file is approved for publication.
 
 Copy-paste these to get the word out. Post in this order for maximum signal.
 
@@ -81,7 +84,7 @@ Then ask Claude: "Optimize the Rastrigin function in 10 dimensions, explain what
 **Pro ($29/mo):** All 6 objectives, 100 dims, 5000 iters, all tools
 
 GitHub: https://github.com/jdhart81/quantaoptima
-Pro: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
+Pro: https://github.com/jdhart81/quantaoptima#release-status-and-migration
 
 ---
 
@@ -96,7 +99,7 @@ QuantaOptima is the first black-box optimizer built specifically for AI agents. 
 
 **Install:** `pip install quantaoptima`
 
-**Links:** [GitHub](https://github.com/jdhart81/quantaoptima) | [Get Pro](https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04)
+**Links:** [GitHub](https://github.com/jdhart81/quantaoptima) | [Preview status](https://github.com/jdhart81/quantaoptima#release-status-and-migration)
 
 ---
 
@@ -165,7 +168,7 @@ Free tier: 3 objectives, 10 dims, 100 iters — enough to try it.
 Pro ($29/mo): all objectives, 100 dims, all 6 tools including benchmarking and audit.
 
 GitHub: https://github.com/jdhart81/quantaoptima
-Pro: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
+Pro: https://github.com/jdhart81/quantaoptima#release-status-and-migration
 
 ---
 
@@ -191,7 +194,7 @@ The monetization model: MCP server with freemium tiers. Free to try, Pro ($29/mo
 If your team uses AI agents for optimization work, or needs auditable results for compliance, check it out:
 
 GitHub: https://github.com/jdhart81/quantaoptima
-Get Pro: https://buy.stripe.com/8x24gze0edtu1FwgSUfYY04
+Preview status: https://github.com/jdhart81/quantaoptima#release-status-and-migration
 
 `pip install quantaoptima`
 

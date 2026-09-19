@@ -290,10 +290,15 @@ class AuditChain:
             "blocks": results,
         }
 
-    def export_json(self, filepath: str) -> None:
-        """Export the full audit chain as JSON."""
+    def export_json(self, filepath: str, *, overwrite: bool = True) -> None:
+        """Export the full audit chain as JSON.
+
+        Library callers retain the historical overwrite behavior. Agent-facing
+        tools pass ``overwrite=False`` so exports cannot replace existing files.
+        """
         data = self.export_dict()
-        with open(filepath, "w") as f:
+        mode = "w" if overwrite else "x"
+        with open(filepath, mode) as f:
             json.dump(data, f, indent=2)
 
     @_synchronized
@@ -526,8 +531,8 @@ class CryptoAuditTrail:
     def verify(self) -> bool:
         return self._chain.verify()
 
-    def export_json(self, filepath: str) -> None:
-        self._chain.export_json(filepath)
+    def export_json(self, filepath: str, *, overwrite: bool = True) -> None:
+        self._chain.export_json(filepath, overwrite=overwrite)
 
     def summary(self) -> Dict[str, Any]:
         raw = self._chain.summary()

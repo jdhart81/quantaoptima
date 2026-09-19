@@ -195,13 +195,16 @@ a:hover { text-decoration: underline; }
   <div class="hero">
     <div class="check">&#10003;</div>
     <div class="badge-pro">PRO</div>
-    <h1>Welcome to QuantaOptima Pro</h1>
-    <div class="subtitle">Your payment was successful. Here's how to activate your license.</div>
+    <h1>QuantaOptima paid activation is paused</h1>
+    <div class="subtitle">Public sales and automatic activation are disabled while fulfillment is being reverified.</div>
   </div>
 
   <!-- What's unlocked -->
   <div class="card">
-    <h2>What You Just Unlocked</h2>
+    <h2>Do not rely on automatic activation</h2>
+    <p>If an older checkout link brought you here, use the customer portal below
+    to manage the transaction and email support with the receipt. A payment page
+    is not evidence that a usable license was delivered.</p>
     <div class="unlocked-grid">
       <div class="unlocked-item"><span class="icon">&#10003;</span> 100 dimensions</div>
       <div class="unlocked-item"><span class="icon">&#10003;</span> 5,000 iterations</div>
@@ -214,8 +217,10 @@ a:hover { text-decoration: underline; }
 
   <!-- Activation -->
   <div class="card">
-    <h2>Activate Your License</h2>
-    <p>Use your Stripe receipt to confirm payment. Activation requires a v0.4 license and the issuer’s trusted public key. Existing HMAC licenses must be reissued; contact support with your receipt if needed.</p>
+    <h2>Activation requirements</h2>
+    <p>Activation is available only after manual entitlement reconciliation.
+    It requires a v0.4+ Ed25519 license and the issuer’s separately trusted public
+    key. Existing HMAC licenses must be reissued.</p>
     <p>Follow the <a href="https://github.com/jdhart81/quantaoptima/blob/main/docs/OPERATIONS.md">v0.4 migration guide</a> and set <code>QUANTAOPTIMA_LICENSE_PUBLIC_KEY_FILE</code> to the trusted public PEM path before activating.</p>
 
     <h3>Option A: Environment Variable (recommended)</h3>
@@ -232,7 +237,7 @@ echo "your-license-key-here" > ~/.quantaoptima/license.key</pre>
     <p>Ask Claude: <em>"Run quantaoptima status"</em> &mdash; you should see <code>"tier": "pro"</code></p>
 
     <div class="note">
-      <strong>Note:</strong> If you don't receive your key within a few minutes, email
+      <strong>Note:</strong> No automatic delivery time is promised. Email
       <a href="mailto:hartjustin6@gmail.com">hartjustin6@gmail.com</a> with your Stripe receipt
       and we'll get you activated right away.
     </div>
@@ -258,7 +263,7 @@ echo "your-license-key-here" > ~/.quantaoptima/license.key</pre>
   <!-- Manage Subscription -->
   <div class="card">
     <h2>Manage Your Subscription</h2>
-    <p>Your Pro subscription renews automatically. You can manage it anytime:</p>
+    <p>Use the Stripe customer portal to inspect, cancel, or manage any historical subscription:</p>
 
     <div class="btn-group">
       <a href="https://billing.stripe.com/p/login/28EdR9g8m2OQesi468fYY00" class="btn btn-outline">

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.1 — unreleased
+
+- Retire the legacy expression-evaluating MCP server and the setup script that
+  modified shell startup files.
+- Confine agent-requested exports to `QUANTAOPTIMA_EXPORT_DIR`, reject paths,
+  and refuse to overwrite existing files.
+- Enforce hard function-evaluation ceilings for benchmark participants and
+  correct QuantaOptima's initialization accounting.
+- Disable public paid calls to action until issuer trust distribution and
+  end-to-end Stripe fulfillment are independently verified.
+- Bound provenance language to explicitly recorded data and mark historical
+  benchmark/capability reports as non-validating archives.
+- Align Enterprise metadata with the built-in-objectives-only MCP surface.
+
 ## 0.4.0 — 2026-09-08
 
 - Capture independent audit snapshots, generate secure random audit keys, sign
