@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using these metadata."
+title: "QuantaOptima: Auditable AI Actions"
+type: software
+authors:
+  - family-names: Hart
+    given-names: "Justin D."
+    affiliation: "Viridis LLC, Columbia Falls, Montana, USA"
+    orcid: "https://orcid.org/0009-0008-3082-2482"
+repository-code: "https://github.com/jdhart81/quantaoptima"
+abstract: "Audit trails for AI agent workflows, with an MCP server, a Python library and a quantum-inspired optimizer."
+license: Apache-2.0
+keywords:
+  - "AI agents"
+  - "audit trail"
+  - "MCP"
+  - "optimization"
+  - "Python"
