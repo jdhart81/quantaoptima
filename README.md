@@ -1,5 +1,7 @@
 # QuantaOptima
 
+[![Tests](https://github.com/jdhart81/quantaoptima/actions/workflows/tests.yml/badge.svg)](https://github.com/jdhart81/quantaoptima/actions/workflows/tests.yml) [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/jdhart81/quantaoptima/badge)](https://scorecard.dev/viewer/?uri=github.com/jdhart81/quantaoptima)
+
 **Auditable AI Actions — cryptographic audit trails for AI agent workflows.**
 
 QuantaOptima authenticates explicitly logged AI agent action records. It ships as an MCP server that any LLM agent can call, and as a Python library that any MCP server developer can embed. Explicitly recorded actions are authenticated with HMAC-SHA256 and linked in a hash chain. Verification detects changes to authenticated record contents; it does not establish that an action occurred or that all actions were recorded.
@@ -247,4 +249,4 @@ US Provisional Patent Application filed May 25, 2025. Covers:
 
 ## License
 
-Apache 2.0 — use it freely, including commercially. The patent covers the specific algorithm implementation; the Apache license grants you a patent license for use of this software.
+Apache 2.0 — use it freely, including commercially. A U.S. provisional patent application was filed on May 25, 2025. Your rights to use this software, including patent rights, are those in LICENSE (Apache-2.0).
