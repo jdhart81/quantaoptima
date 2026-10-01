@@ -1,0 +1,21 @@
+{
+  "title": "QuantaOptima: Auditable AI Actions",
+  "upload_type": "software",
+  "description": "Audit trails for AI agent workflows, with an MCP server, a Python library and a quantum-inspired optimizer.",
+  "creators": [
+    {
+      "name": "Hart, Justin D.",
+      "affiliation": "Viridis LLC",
+      "orcid": "0009-0008-3082-2482"
+    }
+  ],
+  "license": "apache-2.0",
+  "keywords": [
+    "AI agents",
+    "audit trail",
+    "MCP",
+    "optimization",
+    "Python"
+  ],
+  "access_right": "open"
+}

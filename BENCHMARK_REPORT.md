@@ -15,7 +15,7 @@
 
 QuantaOptima demonstrates **dramatically superior scaling** compared to classical optimization methods, requiring up to **12× fewer function evaluations** at higher dimensions despite not yet matching the raw precision of mature scipy implementations on low-dimensional problems.
 
-The key finding: **QuantaOptima's function evaluation count scales sub-linearly with dimension** (d^0.44–0.64), while differential evolution scales super-linearly (d^1.77–2.26). This is the core claim of the patent and the Coherence-Enhanced Selection Theorem.
+The key finding: **QuantaOptima's function evaluation count scales sub-linearly with dimension** (d^0.44–0.64), while differential evolution scales super-linearly (d^1.77–2.26). This is the method's central performance claim and the core claim of the Coherence-Enhanced Selection Theorem.
 
 ---
 
@@ -91,7 +91,7 @@ QO is most competitive on Rosenbrock and Ackley when accounting for evaluation b
 ## Honest Assessment
 
 **Strengths:**
-- Sub-linear scaling with dimension is real and significant (the patent's central claim)
+- Sub-linear scaling with dimension is real and significant (the method's central performance claim)
 - At d≥10, QO uses dramatically fewer function evaluations than DE
 - Competitive accuracy on valley-shaped (Rosenbrock) and multimodal-flat (Ackley) landscapes
 - Cryptographic audit trail works and verifies correctly
@@ -109,7 +109,7 @@ QO is most competitive on Rosenbrock and Ackley when accounting for evaluation b
 2. Revise paper's scaling claim from α≈0.23 to α≈0.5 (still sub-linear, still significant)
 3. Add adaptive entanglement strength that varies per-dimension
 4. Consider hybrid approach: QO for coarse search → DE for local polishing
-5. Patent claims about sub-linear scaling are supported; specific exponent should be softened
+5. The method's central performance claim about sub-linear scaling is supported; specific exponent should be softened
 
 ---
 
