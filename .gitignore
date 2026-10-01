@@ -30,3 +30,10 @@ QuantaOptima_Project_Review.docx
 !quantaoptima/license_public_key.pem
 *.sqlite3*
 .venv/
+
+# Additional secret-file patterns
+.env.*
+!.env.example
+.p12
+service-account.json
+*.keystore
