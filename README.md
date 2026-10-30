@@ -12,6 +12,8 @@ pip install https://github.com/jdhart81/quantaoptima/releases/download/v0.4.0/qu
 
 The package is distributed through GitHub Releases; it is not currently listed on PyPI.
 
+Agents: start with [llms.txt](llms.txt) and [AGENTS.md](AGENTS.md), which say what a verified chain does and does not show.
+
 ## Release status and migration
 
 Version **0.4.1 is an unreleased hardening candidate**; v0.4.0 remains the latest
