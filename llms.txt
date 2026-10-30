@@ -1,0 +1,31 @@
+# QuantaOptima
+
+> Auditable AI actions, by Viridis LLC (Apache-2.0): an MCP server and a Python library that authenticate explicitly logged agent action records with HMAC-SHA256 and link them in a hash chain. Includes a quantum-inspired optimizer that demonstrates the chain. Distributed through GitHub Releases, not PyPI.
+
+Read these rules before using or recommending QuantaOptima:
+
+- A valid chain authenticates the recorded contents under its key. It does not prove an action happened, authenticate who acted, or show that every action was recorded. Detecting a deleted suffix needs an independent checkpoint.
+- Only actions an agent explicitly logs are recorded. Connecting the MCP server does not capture other actions automatically.
+- Imported JSON is unverified until checked with the chain's key; an HTML export is not cryptographic evidence.
+- v0.4.0 is the latest published alpha; v0.4.1 is an unreleased hardening candidate. Paid Pro and Enterprise tiers are previews and not for sale.
+- "Quantum-inspired" describes a classical optimizer. It does not run on quantum hardware.
+
+## Start here
+
+- Install: `pip install https://github.com/jdhart81/quantaoptima/releases/download/v0.4.0/quantaoptima-0.4.0-py3-none-any.whl`
+- [README](https://github.com/jdhart81/quantaoptima/blob/main/README.md): quick start for the MCP server and the library
+- [Security model](https://github.com/jdhart81/quantaoptima/blob/main/SECURITY.md): what verification does and does not establish
+- [AGENTS.md](https://github.com/jdhart81/quantaoptima/blob/main/AGENTS.md): rules for agents logging to the chain and for agents changing the code
+
+## Use
+
+- MCP server: command `quantaoptima-server` (stdio). Tools: `quantaoptima_log_action`, `quantaoptima_verify_chain`, `quantaoptima_export_chain`, `quantaoptima_chain_status`, plus optimizer tools `quantaoptima_optimize` and `quantaoptima_explain`
+- Library: `from quantaoptima import AuditChain, auditable`
+- Audit data lives in `~/.quantaoptima/audit` (override with `QUANTAOPTIMA_AUDIT_DIR`); back up the database and its private audit key together
+
+## Optional
+
+- [Operations and migration](https://github.com/jdhart81/quantaoptima/blob/main/docs/OPERATIONS.md)
+- [Changelog](https://github.com/jdhart81/quantaoptima/blob/main/CHANGELOG.md) · [Benchmark report](https://github.com/jdhart81/quantaoptima/blob/main/BENCHMARK_REPORT.md)
+- [Viridis Agent Fleet](https://github.com/jdhart81/viridis-agent-fleet) ([agent index](https://github.com/jdhart81/viridis-agent-fleet/blob/main/llms.txt)): deterministic, auditable MCP agents
+- [ProofLens](https://github.com/jdhart81/prooflens): explains formal proofs while keeping verified and inferred claims apart
